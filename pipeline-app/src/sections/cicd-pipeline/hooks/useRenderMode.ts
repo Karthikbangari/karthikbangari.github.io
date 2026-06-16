@@ -23,20 +23,17 @@ function detectWebGL(): boolean {
 }
 
 /**
- * Whether to DEFAULT to 3D. The user can always override via the toggle (which
- * is gated only on WebGL) — this just picks the initial mode so reduced-motion
- * / low-power devices start in the calmer 2D view.
+ * Whether to DEFAULT to 3D. Any desktop browser with WebGL lands in the 3D
+ * valley (the highlight of the section). Only small / mobile / touch devices
+ * start in the calmer 2D view. The user can always switch via the toggle.
  */
 function detectPrefer3D(): boolean {
   if (!detectWebGL()) return false;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
 
-  const cores = navigator.hardwareConcurrency ?? 4;
   const isSmall = window.matchMedia("(max-width: 820px)").matches;
   const isCoarse = window.matchMedia("(pointer: coarse)").matches;
   const isMobileUA = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  if (cores < 4) return false;
   if (isSmall || (isCoarse && isMobileUA)) return false;
   return true;
 }
