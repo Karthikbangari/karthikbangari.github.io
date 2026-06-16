@@ -4,11 +4,12 @@ import styles from "../styles.module.css";
 
 interface Props {
   mode: RenderMode;
-  capable: boolean;
+  /** WebGL available — the 3D toggle is usable. */
+  canRender3D: boolean;
   setMode: (mode: RenderMode) => void;
 }
 
-export function ExperienceBar({ mode, capable, setMode }: Props) {
+export function ExperienceBar({ mode, canRender3D, setMode }: Props) {
   return (
     <div className={styles.expBar}>
       <div className={styles.segmented} role="group" aria-label="Rendering mode">
@@ -23,11 +24,11 @@ export function ExperienceBar({ mode, capable, setMode }: Props) {
           className={`${styles.segment} ${mode === "3d" ? styles.segmentActive : ""}`}
           aria-pressed={mode === "3d"}
           onClick={() => setMode("3d")}
-          disabled={!capable}
+          disabled={!canRender3D}
           title={
-            capable
+            canRender3D
               ? "Interactive 3D valley"
-              : "3D disabled — reduced-motion or low-power device. The 2D version has full parity."
+              : "3D needs WebGL, which isn't available in this browser."
           }
         >
           <Box size={13} aria-hidden /> 3D
@@ -36,10 +37,10 @@ export function ExperienceBar({ mode, capable, setMode }: Props) {
       <span className={styles.expHint}>
         <Info size={12} aria-hidden />
         {mode === "3d"
-          ? "Valley scene scaffold — interactive stations arrive next."
-          : capable
+          ? "Interactive 3D valley — click a station to focus it."
+          : canRender3D
             ? "2D view — switch to 3D for the interactive valley."
-            : "2D view — full parity (3D off for reduced-motion / low-power)."}
+            : "2D view — 3D unavailable (no WebGL); full parity here."}
       </span>
     </div>
   );

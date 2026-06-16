@@ -11,33 +11,26 @@ function detectTier(): QualityTier {
   return wide && cores >= 8 ? "high" : "medium";
 }
 
-/**
- * Decide whether this device should get the full 3D experience. The 2D version
- * is a first-class fallback, NOT a downgrade — we only opt into 3D when the
- * device can clearly handle it and the user hasn't asked for reduced motion.
- */
-function detectCapable(): boolean {
+/** The ONLY hard requirement for 3D: a working WebGL context. */
+function detectWebGL(): boolean {
   if (typeof window === "undefined") return false;
+  try {
+    const canvas = document.createElement("canvas");
+    return Boolean(canvas.getContext("webgl2") ?? canvas.getContext("webgl"));
+  } catch {
+    return false;
+  }
+}
 
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)",
-  ).matches;
-  if (reducedMotion) return false;
+/**
+ * Whether to DEFAULT to 3D. The user can always override via the toggle (which
+ * is gated only on WebGL) — this just picks the initial mode so reduced-motion
+ * / low-power devices start in the calmer 2D view.
+ */
+function detectPrefer3D(): boolean {
+  if (!detectWebGL()) return false;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
 
-  // WebGL support is mandatory for R3F.
-  const hasWebGL = (() => {
-    try {
-      const canvas = document.createElement("canvas");
-      return Boolean(
-        canvas.getContext("webgl2") ?? canvas.getContext("webgl"),
-      );
-    } catch {
-      return false;
-    }
-  })();
-  if (!hasWebGL) return false;
-
-  // Low-power heuristics: few cores, small/touch screens, or coarse pointers.
   const cores = navigator.hardwareConcurrency ?? 4;
   const isSmall = window.matchMedia("(max-width: 820px)").matches;
   const isCoarse = window.matchMedia("(pointer: coarse)").matches;
@@ -45,13 +38,13 @@ function detectCapable(): boolean {
 
   if (cores < 4) return false;
   if (isSmall || (isCoarse && isMobileUA)) return false;
-
   return true;
 }
 
 export interface RenderModeState {
   mode: RenderMode;
-  capable: boolean;
+  /** WebGL available — the 3D toggle is usable. */
+  canRender3D: boolean;
   tier: QualityTier;
   /** True while the initial capability probe runs (avoids SSR/first-paint flash). */
   ready: boolean;
@@ -60,28 +53,16 @@ export interface RenderModeState {
 }
 
 export function useRenderMode(): RenderModeState {
-  const [capable, setCapable] = useState(false);
+  const [canRender3D, setCanRender3D] = useState(false);
   const [ready, setReady] = useState(false);
   const [mode, setMode] = useState<RenderMode>("2d");
   const [tier, setTier] = useState<QualityTier>("medium");
 
   useEffect(() => {
-    const can = detectCapable();
-    setCapable(can);
-    setMode(can ? "3d" : "2d");
+    setCanRender3D(detectWebGL());
+    setMode(detectPrefer3D() ? "3d" : "2d");
     setTier(detectTier());
     setReady(true);
-
-    // If the user switches on reduced-motion mid-session, fall back to 2D.
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const onChange = () => {
-      if (mq.matches) {
-        setCapable(false);
-        setMode("2d");
-      }
-    };
-    mq.addEventListener?.("change", onChange);
-    return () => mq.removeEventListener?.("change", onChange);
   }, []);
 
   const toggle = useCallback(
@@ -89,5 +70,5 @@ export function useRenderMode(): RenderModeState {
     [],
   );
 
-  return { mode, capable, tier, ready, setMode, toggle };
+  return { mode, canRender3D, tier, ready, setMode, toggle };
 }

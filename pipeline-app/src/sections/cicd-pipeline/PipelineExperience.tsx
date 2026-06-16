@@ -10,16 +10,20 @@ import { useInView } from "./hooks/useInView";
  * modes share the exact same controls, panels, and state machine.
  */
 export function PipelineExperience() {
-  const { mode, capable, tier, ready, setMode } = useRenderMode();
+  const { mode, canRender3D, tier, ready, setMode } = useRenderMode();
   const { ref, inView } = useInView<HTMLDivElement>();
 
-  const show3D = ready && capable && mode === "3d";
+  const show3D = ready && canRender3D && mode === "3d";
 
   return (
     <div ref={ref}>
       <Pipeline2D
         modeBar={
-          <ExperienceBar mode={mode} capable={capable} setMode={setMode} />
+          <ExperienceBar
+            mode={mode}
+            canRender3D={canRender3D}
+            setMode={setMode}
+          />
         }
         viewport={
         show3D ? (
