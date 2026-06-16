@@ -21,7 +21,15 @@ export function PipelineExperience() {
         modeBar={
           <ExperienceBar mode={mode} capable={capable} setMode={setMode} />
         }
-        viewport={show3D ? <Viewport3D active={inView} tier={tier} /> : undefined}
+        viewport={
+        show3D ? (
+          <Viewport3D
+            active={inView}
+            tier={tier}
+            onSceneError={() => setMode("2d")}
+          />
+        ) : undefined
+      }
       />
     </div>
   );

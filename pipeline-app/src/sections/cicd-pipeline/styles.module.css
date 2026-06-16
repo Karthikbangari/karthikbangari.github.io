@@ -258,6 +258,17 @@
 .stage canvas {
   display: block;
 }
+.stageFallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--valley-body);
+}
 .stageBadge {
   position: absolute;
   left: 12px;
