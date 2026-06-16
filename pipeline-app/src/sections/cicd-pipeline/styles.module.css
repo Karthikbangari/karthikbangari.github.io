@@ -331,7 +331,110 @@
 
 /* ── Navigation / meadow path ── */
 .navWrap {
-  padding: 1.3rem 1.1rem 1rem;
+  position: relative;
+  padding: 1.6rem 1.1rem 1rem;
+}
+
+/* ── Train-on-a-track rail ── */
+.rail {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: visible;
+}
+.railBase {
+  fill: none;
+  stroke: rgba(124, 176, 120, 0.45);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.railTrail {
+  fill: none;
+  stroke: var(--valley-grass);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.5));
+  transition: stroke 280ms ease;
+}
+.railTrailWarn {
+  stroke: var(--state-fail);
+  filter: drop-shadow(0 0 5px rgba(224, 138, 138, 0.55));
+}
+.railNode {
+  fill: #ffffff;
+  stroke: rgba(124, 176, 120, 0.7);
+  stroke-width: 2;
+  transition: fill 240ms ease, stroke 240ms ease;
+}
+.node_running {
+  fill: var(--valley-blue);
+  stroke: var(--valley-blue);
+}
+.node_success {
+  fill: var(--state-success);
+  stroke: var(--state-success);
+}
+.node_failed {
+  fill: var(--state-fail);
+  stroke: var(--state-fail);
+}
+
+/* ── Train capsule + trailing particles ── */
+.trainLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+.capsule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+.capsuleCore {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, var(--valley-gold));
+  box-shadow: 0 0 0 4px rgba(245, 215, 110, 0.35), 0 6px 16px rgba(15, 23, 42, 0.3);
+}
+.capsuleMoving .capsuleCore {
+  box-shadow: 0 0 0 6px rgba(245, 215, 110, 0.22), 0 6px 18px rgba(15, 23, 42, 0.32);
+}
+.capsuleLabel {
+  position: absolute;
+  top: -22px;
+  left: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 999px;
+  color: var(--valley-ink);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.14);
+}
+.trailDot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 215, 110, 0.9), transparent 70%);
+  opacity: 0;
 }
 .pathTrack {
   position: relative;
