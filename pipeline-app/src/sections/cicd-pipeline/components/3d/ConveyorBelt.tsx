@@ -32,6 +32,7 @@ export function ConveyorBelt({
 }) {
   const rollers = useRef<THREE.InstancedMesh>(null);
   const stream = useRef<THREE.InstancedMesh>(null);
+  const frame = useRef(0);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const colorObj = useMemo(() => new THREE.Color(), []);
   const x0 = -BELT_LENGTH / 2;
@@ -70,6 +71,10 @@ export function ConveyorBelt({
   }, [dummy, colorObj, x0, streamCount]);
 
   useFrame((state) => {
+    // Rebuild the bead matrices every other frame — half the CPU cost, still
+    // reads as smooth flow.
+    frame.current += 1;
+    if (frame.current % 2 !== 0) return;
     const t = state.clock.elapsedTime;
     const s = stream.current;
     if (!s) return;

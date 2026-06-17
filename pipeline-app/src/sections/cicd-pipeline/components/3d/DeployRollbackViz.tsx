@@ -128,7 +128,7 @@ function useThrottledText(): [string, (v: string) => void] {
         setText(pending.current);
         pending.current = null;
       }
-    }, 120);
+    }, 450);
     return () => window.clearInterval(id);
   }, []);
   return [text, (v: string) => (pending.current = v)];

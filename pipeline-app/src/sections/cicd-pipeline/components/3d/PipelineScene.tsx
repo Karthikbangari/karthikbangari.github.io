@@ -56,24 +56,18 @@ export default function PipelineScene({
   return (
     <Canvas
       orthographic
-      shadows={high}
-      dpr={high ? [1, 1.75] : [1, 1.25]}
+      // Shadows off + capped DPR = the big FPS wins; lighting still reads well.
+      shadows={false}
+      dpr={high ? [1, 1.5] : 1}
       gl={{ alpha: true, antialias: high, powerPreference: "high-performance" }}
       camera={{ position: [7, 9.5, 12], zoom: 32, near: 0.1, far: 200 }}
       frameloop={active ? "always" : "never"}
       style={{ background: "transparent" }}
     >
-      {/* Bright, warm daylight */}
-      <hemisphereLight args={["#ffffff", "#cfe6d6", 1.25]} />
-      <directionalLight
-        position={[8, 13, 6]}
-        intensity={1.45}
-        color="#fff6da"
-        castShadow={high}
-        shadow-mapSize={[1024, 1024]}
-      />
-      <directionalLight position={[-7, 6, -4]} intensity={0.5} color="#cfe6ff" />
-      <ambientLight intensity={0.5} />
+      {/* Bright, warm daylight (single key + ambient — cheap) */}
+      <hemisphereLight args={["#ffffff", "#cfe6d6", 1.3]} />
+      <directionalLight position={[8, 13, 6]} intensity={1.5} color="#fff6da" />
+      <ambientLight intensity={0.55} />
 
       {/* Ground + blueprint grid (core gridHelper — no custom shader) */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.47, 0]} receiveShadow>
@@ -84,7 +78,7 @@ export default function PipelineScene({
 
       <ConveyorBelt
         active={phase === "running"}
-        streamCount={high ? 96 : 54}
+        streamCount={high ? 56 : 30}
       />
 
       {/* Labels use troika text (font fetched async). Isolate that suspension so
