@@ -62,16 +62,17 @@ export default function PipelineScene({
       frameloop={active ? "always" : "never"}
       style={{ background: "transparent" }}
     >
-      {/* Warm soft daylight */}
-      <hemisphereLight args={["#fbf7ec", "#cfe6d6", 1.0]} />
+      {/* Bright, warm daylight */}
+      <hemisphereLight args={["#ffffff", "#cfe6d6", 1.25]} />
       <directionalLight
-        position={[8, 12, 6]}
-        intensity={1.1}
-        color="#fff3cf"
+        position={[8, 13, 6]}
+        intensity={1.45}
+        color="#fff6da"
         castShadow={high}
         shadow-mapSize={[1024, 1024]}
       />
-      <ambientLight intensity={0.35} />
+      <directionalLight position={[-7, 6, -4]} intensity={0.5} color="#cfe6ff" />
+      <ambientLight intensity={0.5} />
 
       {/* Ground + blueprint grid (core gridHelper — no custom shader) */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.47, 0]} receiveShadow>
@@ -81,9 +82,8 @@ export default function PipelineScene({
       <gridHelper args={[120, 80, "#7ccb5b", "#cdd7df"]} position={[0, -0.45, 0]} />
 
       <ConveyorBelt
-        cursorT={cursorT}
-        active={active && phase === "running"}
-        streamCount={high ? 40 : 22}
+        active={phase === "running"}
+        streamCount={high ? 96 : 54}
       />
 
       {/* Labels use troika text (font fetched async). Isolate that suspension so

@@ -18,14 +18,14 @@ export interface StationVisual {
 }
 
 export const STATION_VISUALS: Record<string, StationVisual> = {
-  source: { kind: "cabin", accent: "#8bbcf0" },
-  "ci-build": { kind: "mill", accent: "#d98c4a" },
-  "quality-security": { kind: "gate", accent: "#10b981" },
-  "package-registry": { kind: "barn", accent: "#3b97f3" },
-  infrastructure: { kind: "field", accent: "#7c5cff" },
-  "deploy-eks": { kind: "pods", accent: "#2563eb" },
-  "release-strategy": { kind: "crossroads", accent: "#d4af37" },
-  observability: { kind: "watchtower", accent: "#0ea5a3" },
+  source: { kind: "cabin", accent: "#38bdf8" },
+  "ci-build": { kind: "mill", accent: "#fb923c" },
+  "quality-security": { kind: "gate", accent: "#34d399" },
+  "package-registry": { kind: "barn", accent: "#3b82f6" },
+  infrastructure: { kind: "field", accent: "#a855f7" },
+  "deploy-eks": { kind: "pods", accent: "#6366f1" },
+  "release-strategy": { kind: "crossroads", accent: "#fbbf24" },
+  observability: { kind: "watchtower", accent: "#06b6d4" },
 };
 
 /** Status → glow/emissive colour, on-brand and gentle. */
