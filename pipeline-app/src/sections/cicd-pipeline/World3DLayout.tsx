@@ -24,13 +24,7 @@ const PHASE_TONE: Record<string, string> = {
  * recruiter block sit compactly BELOW it; station details live in a slide-in
  * drawer that opens on select. No card row inside the scene area.
  */
-export function World3DLayout({
-  modeBar,
-  viewport,
-}: {
-  modeBar: ReactNode;
-  viewport: ReactNode;
-}) {
+export function World3DLayout({ viewport }: { viewport: ReactNode }) {
   const { state } = usePipeline();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -56,7 +50,6 @@ export function World3DLayout({
           <span className={styles.bannerPhase}>{state.phase}</span>
           <span className={styles.bannerNote}>{state.note}</span>
         </div>
-        {modeBar}
       </div>
 
       {/* Hero scene */}
