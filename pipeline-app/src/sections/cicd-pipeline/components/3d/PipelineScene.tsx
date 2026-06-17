@@ -1,5 +1,6 @@
+import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Grid } from "@react-three/drei";
+import { Grid, OrbitControls } from "@react-three/drei";
 import { ConveyorBelt } from "./ConveyorBelt";
 import { Station } from "./Station";
 import { ArtifactTravel } from "./ArtifactTravel";
@@ -93,6 +94,9 @@ export default function PipelineScene({
         streamCount={high ? 40 : 22}
       />
 
+      {/* Labels use troika text (font fetched async). Isolate that suspension so
+          the belt + machines render immediately even if the font is slow. */}
+      <Suspense fallback={null}>
       {PIPELINE_STAGES.map((stage, i) => (
         <Station
           key={stage.id}
@@ -121,7 +125,22 @@ export default function PipelineScene({
       />
 
       <ArtifactTravel targetT={cursorT} label={artifact} moving={phase === "running"} />
+      </Suspense>
 
+      <OrbitControls
+        makeDefault
+        target={[0, 0.4, 0]}
+        enablePan={false}
+        enableZoom
+        minZoom={24}
+        maxZoom={90}
+        minPolarAngle={Math.PI * 0.12}
+        maxPolarAngle={Math.PI * 0.46}
+        minAzimuthAngle={-Math.PI * 0.4}
+        maxAzimuthAngle={Math.PI * 0.4}
+        enableDamping
+        dampingFactor={0.08}
+      />
       <CameraRig focusIndex={selectedIndex} />
     </Canvas>
   );

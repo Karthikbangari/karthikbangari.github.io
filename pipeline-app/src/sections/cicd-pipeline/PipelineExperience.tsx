@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { Pipeline2D } from "./Pipeline2D";
+import { World3DLayout } from "./World3DLayout";
 import { ExperienceBar } from "./components/ExperienceBar";
 import { Viewport3D } from "./components/Viewport3D";
 import { MobileWorkflow } from "./components/MobileWorkflow";
@@ -40,29 +41,27 @@ export function PipelineExperience() {
     onIndex: focusStage,
   });
 
+  const modeBar = (
+    <ExperienceBar mode={mode} canRender3D={canRender3D} setMode={setMode} />
+  );
+
   return (
     <div ref={ref}>
       {isMobile ? (
         <MobileWorkflow />
-      ) : (
-        <Pipeline2D
-          modeBar={
-            <ExperienceBar
-              mode={mode}
-              canRender3D={canRender3D}
-              setMode={setMode}
+      ) : show3D ? (
+        <World3DLayout
+          modeBar={modeBar}
+          viewport={
+            <Viewport3D
+              active={inView}
+              tier={tier}
+              onSceneError={() => setMode("2d")}
             />
           }
-          viewport={
-            show3D ? (
-              <Viewport3D
-                active={inView}
-                tier={tier}
-                onSceneError={() => setMode("2d")}
-              />
-            ) : undefined
-          }
         />
+      ) : (
+        <Pipeline2D modeBar={modeBar} />
       )}
     </div>
   );
