@@ -4,49 +4,50 @@ import gsap from "gsap";
 import * as THREE from "three";
 import { stationPositions } from "./path";
 
+// Fixed isometric offset from the look target (belt runs along X).
+const OFF = new THREE.Vector3(7, 9.5, 12);
+
 /**
- * Smooth GSAP camera focus. When the focused station changes, the camera tweens
- * to frame it; with no focus it eases to a wide valley overview. A subtle idle
- * sway keeps the shot alive without disorienting full orbits.
+ * Orthographic isometric rig. The camera keeps a constant iso angle and simply
+ * pans along the belt (X) to frame the focused station, easing zoom in/out with
+ * GSAP. No orbit — the angle never changes, so it reads as true isometric.
  */
 export function CameraRig({ focusIndex }: { focusIndex: number | null }) {
-  const { camera } = useThree();
-  const look = useRef(new THREE.Vector3(0, -1, 0));
-  // Tweened state applied every frame.
-  const cam = useRef({ px: 0, py: 2.2, pz: 12, lx: 0, ly: -1, lz: 0 });
+  const { camera, size } = useThree();
+  const cam = useRef({ cx: 0, zoom: 40 });
+  const look = useRef(new THREE.Vector3());
+
+  const baseZoom = Math.max(26, Math.min(58, size.width / 26));
 
   useEffect(() => {
-    const overview = { px: 0, py: 2.6, pz: 12.5, lx: 0, ly: -1, lz: -0.5 };
-    let dest = overview;
-
-    if (focusIndex !== null && stationPositions[focusIndex]) {
-      const s = stationPositions[focusIndex];
-      dest = {
-        px: s.x * 0.55,
-        py: s.y + 3.1,
-        pz: s.z + 6.2,
-        lx: s.x,
-        ly: s.y + 1.1,
-        lz: s.z,
-      };
-    }
-
+    const focused = focusIndex !== null && stationPositions[focusIndex];
+    const dest = {
+      cx: focused ? stationPositions[focusIndex].x : 0,
+      zoom: focused ? baseZoom * 1.18 : baseZoom * 0.92,
+    };
     const tween = gsap.to(cam.current, {
       ...dest,
-      duration: 1.15,
+      duration: 1.0,
       ease: "power2.inOut",
       overwrite: true,
     });
     return () => {
       tween.kill();
     };
-  }, [focusIndex]);
+  }, [focusIndex, baseZoom]);
 
   useFrame((state) => {
-    const sway = Math.sin(state.clock.elapsedTime * 0.25) * 0.25;
-    camera.position.set(cam.current.px + sway, cam.current.py, cam.current.pz);
-    look.current.set(cam.current.lx, cam.current.ly, cam.current.lz);
+    const { cx, zoom } = cam.current;
+    // Subtle idle drift keeps the shot alive without breaking the iso angle.
+    const sway = Math.sin(state.clock.elapsedTime * 0.2) * 0.15;
+    camera.position.set(cx + OFF.x + sway, OFF.y, OFF.z);
+    look.current.set(cx, 0.2, 0);
     camera.lookAt(look.current);
+    const ortho = camera as THREE.OrthographicCamera;
+    if (Math.abs(ortho.zoom - zoom) > 0.01) {
+      ortho.zoom = zoom;
+      ortho.updateProjectionMatrix();
+    }
   });
 
   return null;

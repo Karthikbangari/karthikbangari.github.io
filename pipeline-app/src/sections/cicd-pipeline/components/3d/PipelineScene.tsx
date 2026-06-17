@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
-import { ValleyAmbience } from "./ValleyAmbience";
-import { MeadowPath } from "./MeadowPath";
+import { Grid } from "@react-three/drei";
+import { ConveyorBelt } from "./ConveyorBelt";
 import { Station } from "./Station";
 import { ArtifactTravel } from "./ArtifactTravel";
 import { CameraRig } from "./CameraRig";
@@ -13,7 +13,6 @@ import type { DeployStrategy, Phase, StageStatus } from "../../types";
 import type { QualityTier } from "../../hooks/useRenderMode";
 
 export interface SceneProps {
-  /** When false (section off-screen), rendering is paused to save battery. */
   active: boolean;
   statuses: StageStatus[];
   activeIndex: number;
@@ -30,9 +29,8 @@ const DEPLOY_INDEX = PIPELINE_STAGES.findIndex((s) => s.id === "deploy-eks");
 const RELEASE_INDEX = PIPELINE_STAGES.findIndex((s) => s.id === "release-strategy");
 
 /**
- * Default-exported for React.lazy() — three.js + R3F live in a separate chunk.
- * State arrives as props (bridged from the provider by Viewport3D) since the
- * Canvas is a separate reconciler.
+ * Isometric conveyor-factory scene (Valley OS warm tones). Orthographic camera
+ * + flat iso angle; the artifact rides the belt through machine-stations.
  */
 export default function PipelineScene({
   active,
@@ -51,33 +49,48 @@ export default function PipelineScene({
   const cursorIndex =
     phase === "completed" ? n - 1 : Math.max(activeIndex, lastSuccess, 0);
   const cursorT = cursorIndex / (n - 1);
-
   const high = tier === "high";
 
   return (
     <Canvas
+      orthographic
       shadows={high}
       dpr={high ? [1, 1.75] : [1, 1.25]}
       gl={{ alpha: true, antialias: high, powerPreference: "high-performance" }}
-      camera={{ position: [0, 2.2, 12], fov: 44 }}
+      camera={{ position: [7, 9.5, 12], zoom: 40, near: -50, far: 120 }}
       frameloop={active ? "always" : "never"}
       style={{ background: "transparent" }}
     >
-      <hemisphereLight args={["#eaf6ff", "#bfe7a8", 0.95]} />
+      {/* Warm soft daylight */}
+      <hemisphereLight args={["#fbf7ec", "#cfe6d6", 1.0]} />
       <directionalLight
-        position={[-6.5, 7, 4]}
-        intensity={1.15}
+        position={[8, 12, 6]}
+        intensity={1.1}
         color="#fff3cf"
         castShadow={high}
         shadow-mapSize={[1024, 1024]}
       />
-      <ambientLight intensity={0.25} />
+      <ambientLight intensity={0.35} />
 
-      <ValleyAmbience />
-      <MeadowPath
+      {/* Blueprint grid floor (valley tones) */}
+      <Grid
+        position={[0, -0.46, 0]}
+        args={[60, 30]}
+        cellSize={1}
+        cellThickness={0.6}
+        cellColor="#bcd3c6"
+        sectionSize={5}
+        sectionThickness={1}
+        sectionColor="#7ccb5b"
+        fadeDistance={48}
+        fadeStrength={1.5}
+        infiniteGrid
+      />
+
+      <ConveyorBelt
         cursorT={cursorT}
         active={active && phase === "running"}
-        count={high ? 48 : 24}
+        streamCount={high ? 40 : 22}
       />
 
       {PIPELINE_STAGES.map((stage, i) => (
@@ -107,11 +120,7 @@ export default function PipelineScene({
         rolledBack={rolledBack}
       />
 
-      <ArtifactTravel
-        targetT={cursorT}
-        label={artifact}
-        moving={phase === "running"}
-      />
+      <ArtifactTravel targetT={cursorT} label={artifact} moving={phase === "running"} />
 
       <CameraRig focusIndex={selectedIndex} />
     </Canvas>
