@@ -192,6 +192,16 @@ function Machine({
               />
             </mesh>
           ))}
+          {/* server status lights */}
+          {[0, 1, 2].map((k) => (
+            <mesh key={`l${k}`} position={[-0.12, 0.1 + k * 0.26, 0.33]}>
+              <sphereGeometry args={[0.04, 8, 8]} />
+              <meshBasicMaterial
+                color={["#34d399", "#fbbf24", "#ff5a5f"][k]}
+                toneMapped={false}
+              />
+            </mesh>
+          ))}
         </group>
       );
 
@@ -223,26 +233,58 @@ function Machine({
             <sphereGeometry args={[0.12, 10, 10]} />
             <meshBasicMaterial color="#fff" transparent opacity={0.5} toneMapped={false} />
           </mesh>
+          {/* side pipes */}
+          {[0.16, -0.04, -0.24].map((y, k) => (
+            <mesh key={k} position={[0.5, y, 0.18]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.05, 0.05, 0.7, 8]} />
+              <meshStandardMaterial color="#aebcc6" metalness={0.55} roughness={0.4} />
+            </mesh>
+          ))}
+          <mesh position={[0.5, -0.24, 0.18]}>
+            <cylinderGeometry args={[0.07, 0.07, 0.45, 8]} />
+            <meshStandardMaterial color="#aebcc6" metalness={0.55} roughness={0.4} />
+          </mesh>
         </group>
       );
 
-    case "gate": // Quality & Security — scanner arch + beam
+    case "gate": // Quality & Security — test machine w/ Pass/Fail + Failed bin
       return (
         <group position={[0, 0.4, 0]}>
-          {[-0.45, 0.45].map((x) => (
-            <mesh key={x} position={[x, 0.1, 0]} castShadow>
-              <boxGeometry args={[0.16, 1, 0.16]} />
-              <meshStandardMaterial color={WALL} roughness={0.7} />
-            </mesh>
-          ))}
-          <mesh position={[0, 0.62, 0]}>
-            <boxGeometry args={[1.1, 0.16, 0.16]} />
-            <meshStandardMaterial color={accent} />
+          {/* test machine body */}
+          <mesh castShadow>
+            <boxGeometry args={[1, 0.72, 0.85]} />
+            <meshStandardMaterial color={accent} roughness={0.55} metalness={0.1} />
           </mesh>
+          {/* angled control panel */}
+          <mesh position={[0, 0.42, 0.26]} rotation={[-0.5, 0, 0]} castShadow>
+            <boxGeometry args={[0.78, 0.06, 0.34]} />
+            <meshStandardMaterial color="#16324a" />
+          </mesh>
+          {/* PASS (green) + FAIL (red) buttons */}
+          <mesh position={[-0.17, 0.52, 0.3]} rotation={[-0.5, 0, 0]}>
+            <cylinderGeometry args={[0.08, 0.08, 0.06, 16]} />
+            <meshStandardMaterial color="#34d399" emissive="#34d399" emissiveIntensity={0.6} />
+          </mesh>
+          <mesh position={[0.17, 0.52, 0.3]} rotation={[-0.5, 0, 0]}>
+            <cylinderGeometry args={[0.08, 0.08, 0.06, 16]} />
+            <meshStandardMaterial color="#ff5a5f" emissive="#ff5a5f" emissiveIntensity={0.6} />
+          </mesh>
+          {/* scanning light bar (sweeps) */}
           <group ref={refs.scanner}>
-            <mesh position={[0, 0.1, 0]}>
-              <boxGeometry args={[0.9, 0.04, 0.2]} />
+            <mesh position={[0, 0.42, 0]}>
+              <boxGeometry args={[0.7, 0.04, 0.18]} />
               <meshStandardMaterial color={glow} emissive={glow} emissiveIntensity={0.9} />
+            </mesh>
+          </group>
+          {/* "Failed" reject bin beside the machine */}
+          <group position={[-0.95, -0.15, 0.25]}>
+            <mesh castShadow>
+              <boxGeometry args={[0.42, 0.4, 0.42]} />
+              <meshStandardMaterial color="#8593a0" roughness={0.7} />
+            </mesh>
+            <mesh position={[0, 0.21, 0]}>
+              <boxGeometry args={[0.3, 0.2, 0.3]} />
+              <meshStandardMaterial color="#cfa063" roughness={0.85} />
             </mesh>
           </group>
         </group>

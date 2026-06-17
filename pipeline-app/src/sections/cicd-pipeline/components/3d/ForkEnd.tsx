@@ -102,6 +102,11 @@ export function ForkEnd() {
           <cylinderGeometry args={[0.9, 1, 0.24, 24]} />
           <meshStandardMaterial color="#2b1840" roughness={0.6} />
         </mesh>
+        {/* glowing launch ring */}
+        <mesh position={[0, 0.26, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[0.5, 0.88, 28]} />
+          <meshBasicMaterial color="#ffb43d" toneMapped={false} transparent opacity={0.65} side={THREE.DoubleSide} />
+        </mesh>
         <group ref={rocket}>
           <mesh castShadow>
             <cylinderGeometry args={[0.22, 0.28, 0.9, 16]} />

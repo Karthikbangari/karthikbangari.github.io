@@ -27,7 +27,10 @@ export function ConveyorBelt({
   const beltBase = useRef<THREE.InstancedMesh>(null);
   const rollers = useRef<THREE.InstancedMesh>(null);
   const stream = useRef<THREE.InstancedMesh>(null);
+  const crates = useRef<THREE.InstancedMesh>(null);
   const frame = useRef(0);
+
+  const CRATES = 6;
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const colorObj = useMemo(() => new THREE.Color(), []);
@@ -38,14 +41,16 @@ export function ConveyorBelt({
   const baseGeo = useMemo(() => new THREE.BoxGeometry(1, 0.34, WIDTH), []);
   const rollerGeo = useMemo(() => new THREE.CylinderGeometry(0.22, 0.22, WIDTH, 12), []);
   const beadGeo = useMemo(() => new THREE.SphereGeometry(1, 10, 10), []);
+  const crateGeo = useMemo(() => new THREE.BoxGeometry(0.5, 0.42, 0.5), []);
   useEffect(() => {
     return () => {
       segGeo.dispose();
       baseGeo.dispose();
       rollerGeo.dispose();
       beadGeo.dispose();
+      crateGeo.dispose();
     };
-  }, [segGeo, baseGeo, rollerGeo, beadGeo]);
+  }, [segGeo, baseGeo, rollerGeo, beadGeo, crateGeo]);
 
   // Lay out the belt segments + rollers along the curve once.
   useEffect(() => {
@@ -104,13 +109,32 @@ export function ConveyorBelt({
     }
   }, [dummy, perp, colorObj, streamCount]);
 
-  // Flow the rainbow stream along the curve (every other frame).
   useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    const speedC = active ? 0.06 : 0.025;
+
+    // Crates ride the belt (every frame — only a handful, cheap).
+    const c = crates.current;
+    if (c) {
+      for (let i = 0; i < CRATES; i += 1) {
+        const f = (i / CRATES + t * speedC) % 1;
+        pathCurve.getPoint(f, v);
+        const tan = pathCurve.getTangent(f);
+        const yaw = Math.atan2(tan.z, tan.x);
+        dummy.position.set(v.x, TOP_Y + 0.28, v.z);
+        dummy.rotation.set(0, -yaw, 0);
+        dummy.scale.setScalar(1);
+        dummy.updateMatrix();
+        c.setMatrixAt(i, dummy.matrix);
+      }
+      c.instanceMatrix.needsUpdate = true;
+    }
+
+    // Flow the rainbow stream along the curve (every other frame).
     frame.current += 1;
     if (frame.current % 2 !== 0) return;
     const s = stream.current;
     if (!s) return;
-    const t = state.clock.elapsedTime;
     const speed = active ? 0.12 : 0.045;
     const lanes = 3;
     for (let i = 0; i < streamCount; i += 1) {
@@ -145,6 +169,10 @@ export function ConveyorBelt({
       </instancedMesh>
       <instancedMesh ref={stream} args={[beadGeo, undefined, streamCount]}>
         <meshBasicMaterial toneMapped={false} />
+      </instancedMesh>
+      {/* Cardboard crates riding the belt */}
+      <instancedMesh ref={crates} args={[crateGeo, undefined, CRATES]} castShadow>
+        <meshStandardMaterial color="#cfa063" roughness={0.85} metalness={0.05} />
       </instancedMesh>
     </group>
   );
