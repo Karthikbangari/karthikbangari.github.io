@@ -64,6 +64,189 @@
   line-height: 1.6;
 }
 
+/* ── Premium frame shell ── */
+.frame {
+  border-radius: 26px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(255, 255, 255, 0.4));
+  box-shadow:
+    0 30px 90px rgba(15, 23, 42, 0.18),
+    inset 0 1px rgba(255, 255, 255, 0.95),
+    0 0 0 1px rgba(15, 23, 42, 0.04);
+  -webkit-backdrop-filter: blur(20px) saturate(1.15);
+  backdrop-filter: blur(20px) saturate(1.15);
+}
+.frameHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.07);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.4));
+}
+.frameTitleWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.frameTitle {
+  margin: 0;
+  font-family: "Sora", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--valley-ink);
+}
+.liveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #0a8c63;
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.liveBadge svg {
+  animation: blink 1.4s ease-in-out infinite;
+}
+.toolTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.toolTag {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.03em;
+  padding: 0.22rem 0.5rem;
+  border-radius: 7px;
+  color: var(--valley-muted);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(15, 23, 42, 0.07);
+}
+.frameBody {
+  padding: clamp(0.8rem, 2vw, 1.2rem);
+}
+.frameStrip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 1.2rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  background: #0f1d2c;
+}
+.stripLog {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  flex: 1;
+}
+.stripLogLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex: none;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6f8aa6;
+}
+.stripLogLine {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: #b9f0d2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stripMetrics {
+  display: inline-flex;
+  gap: 0.9rem;
+  flex: none;
+}
+.stripMetric {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.stripMetric small {
+  font-size: 0.52rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6f8aa6;
+}
+.stripMetric strong {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: #cfe6ff;
+}
+@media (max-width: 620px) {
+  .stripMetrics {
+    display: none;
+  }
+}
+
+/* ── Mobile guided journey ── */
+.mobileWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.mobileDots {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+}
+.mobileDot {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background: rgba(15, 23, 42, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  transition: transform 160ms ease;
+}
+.mobileDotActive {
+  transform: scale(1.35);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+.dot_running {
+  background: var(--valley-blue);
+}
+.dot_success {
+  background: var(--state-success);
+}
+.dot_failed {
+  background: var(--state-fail);
+}
+.mobileNavRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.mobileCount {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--valley-muted);
+}
+.mobileJourney {
+  touch-action: pan-y;
+}
+
 /* ── Glass card base ── */
 .lab {
   display: flex;
@@ -1090,4 +1273,14 @@
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* Flatten the inner experience card when wrapped by the premium frame. */
+.frame .frameBody .lab {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  padding: 0;
 }

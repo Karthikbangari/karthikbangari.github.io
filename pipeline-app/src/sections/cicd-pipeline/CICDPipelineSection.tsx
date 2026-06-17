@@ -3,6 +3,7 @@
 // Phase 2+ will add a gated, lazy 3D scene that reuses this same provider.
 import { PipelineProvider } from "./PipelineProvider";
 import { PipelineExperience } from "./PipelineExperience";
+import { PremiumPipelineFrame } from "./components/PremiumPipelineFrame";
 import styles from "./styles.module.css";
 
 export function CICDPipelineSection() {
@@ -23,7 +24,9 @@ export function CICDPipelineSection() {
         </header>
 
         <PipelineProvider>
-          <PipelineExperience />
+          <PremiumPipelineFrame>
+            <PipelineExperience />
+          </PremiumPipelineFrame>
         </PipelineProvider>
       </div>
     </div>
