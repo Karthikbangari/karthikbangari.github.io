@@ -2,11 +2,18 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Billboard, Text, RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
-import { BELT_LENGTH } from "./path";
+import { endPoint, endTangent } from "./path";
 
-const START = new THREE.Vector3(BELT_LENGTH / 2 + 0.4, 0, 0);
-const PROD = new THREE.Vector3(BELT_LENGTH / 2 + 5, 0, 3.4);
-const STAGE = new THREE.Vector3(BELT_LENGTH / 2 + 5, 0, -3.4);
+// Start at the curve's end and branch along its forward tangent ± a spread.
+const FWD = new THREE.Vector3(endTangent.x, 0, endTangent.z).normalize();
+const SIDE = new THREE.Vector3(-FWD.z, 0, FWD.x); // left/right of travel
+const START = endPoint.clone().add(FWD.clone().multiplyScalar(0.8));
+const PROD = START.clone()
+  .add(FWD.clone().multiplyScalar(4))
+  .add(SIDE.clone().multiplyScalar(3.2));
+const STAGE = START.clone()
+  .add(FWD.clone().multiplyScalar(4))
+  .add(SIDE.clone().multiplyScalar(-3.2));
 const RAINBOW = ["#ff4d6d", "#ffe14d", "#3ddc84", "#22d3ee", "#a855f7"];
 
 /** A diverging belt branch with flowing rainbow beads. */
@@ -65,7 +72,7 @@ export function ForkEnd() {
   return (
     <group>
       {/* junction node */}
-      <mesh position={[START.x, 0, 0]} castShadow>
+      <mesh position={[START.x, 0, START.z]} castShadow>
         <cylinderGeometry args={[0.9, 0.9, 0.28, 24]} />
         <meshStandardMaterial color="#c7d2da" roughness={0.5} metalness={0.3} />
       </mesh>
