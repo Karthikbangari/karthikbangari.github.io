@@ -52,13 +52,7 @@ export function PipelineExperience() {
       ) : show3D ? (
         <World3DLayout
           modeBar={modeBar}
-          viewport={
-            <Viewport3D
-              active={inView}
-              tier={tier}
-              onSceneError={() => setMode("2d")}
-            />
-          }
+          viewport={<Viewport3D active={inView} tier={tier} />}
         />
       ) : (
         <Pipeline2D modeBar={modeBar} />

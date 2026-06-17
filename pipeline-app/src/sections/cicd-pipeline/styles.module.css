@@ -445,12 +445,25 @@
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
   align-items: center;
   justify-content: center;
   text-align: center;
   padding: 1.5rem;
   font-size: 0.85rem;
   color: var(--valley-body);
+}
+.stageErr {
+  max-width: 90%;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: #b45757;
+  background: rgba(224, 138, 138, 0.14);
+  border: 1px solid rgba(224, 138, 138, 0.3);
+  border-radius: 10px;
+  padding: 0.5rem 0.7rem;
+  word-break: break-word;
 }
 .stageBadge {
   position: absolute;

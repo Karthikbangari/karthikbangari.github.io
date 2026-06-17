@@ -1,35 +1,43 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import styles from "../styles.module.css";
 
 interface Props {
   children: ReactNode;
-  fallback: ReactNode;
-  /** Notified when the 3D scene fails, so the parent can drop to 2D. */
   onError?: () => void;
 }
 
 interface State {
   hasError: boolean;
+  message: string;
 }
 
 /**
  * Isolates the 3D scene. WebGL/three runtime failures are caught here so they
- * can NEVER unmount the rest of the section — the 2D experience always survives.
+ * can NEVER unmount the rest of the section. Instead of silently hiding the
+ * scene, it shows the actual error message so it can be diagnosed.
  */
 export class SceneErrorBoundary extends Component<Props, State> {
-  state: State = { hasError: false };
+  state: State = { hasError: false, message: "" };
 
-  static getDerivedStateFromError(): State {
-    return { hasError: true };
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, message: error?.message ?? String(error) };
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    // Surface the real cause for debugging without crashing the page.
-    console.error("[cicd-pipeline] 3D scene failed, falling back to 2D:", error, info);
+    console.error("[cicd-pipeline] 3D scene failed:", error, info);
     this.props.onError?.();
   }
 
   render() {
-    if (this.state.hasError) return this.props.fallback;
+    if (this.state.hasError) {
+      return (
+        <div className={styles.stageFallback}>
+          <strong>3D scene couldn’t start on this device.</strong>
+          <span className={styles.stageErr}>{this.state.message}</span>
+          <span>Switch to 2D for the full pipeline.</span>
+        </div>
+      );
+    }
     return this.props.children;
   }
 }

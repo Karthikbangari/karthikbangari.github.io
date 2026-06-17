@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Grid, OrbitControls } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { ConveyorBelt } from "./ConveyorBelt";
 import { Station } from "./Station";
 import { ArtifactTravel } from "./ArtifactTravel";
@@ -58,7 +58,7 @@ export default function PipelineScene({
       shadows={high}
       dpr={high ? [1, 1.75] : [1, 1.25]}
       gl={{ alpha: true, antialias: high, powerPreference: "high-performance" }}
-      camera={{ position: [7, 9.5, 12], zoom: 40, near: -50, far: 120 }}
+      camera={{ position: [7, 9.5, 12], zoom: 40, near: 0.1, far: 200 }}
       frameloop={active ? "always" : "never"}
       style={{ background: "transparent" }}
     >
@@ -73,20 +73,12 @@ export default function PipelineScene({
       />
       <ambientLight intensity={0.35} />
 
-      {/* Blueprint grid floor (valley tones) */}
-      <Grid
-        position={[0, -0.46, 0]}
-        args={[60, 30]}
-        cellSize={1}
-        cellThickness={0.6}
-        cellColor="#bcd3c6"
-        sectionSize={5}
-        sectionThickness={1}
-        sectionColor="#7ccb5b"
-        fadeDistance={48}
-        fadeStrength={1.5}
-        infiniteGrid
-      />
+      {/* Ground + blueprint grid (core gridHelper — no custom shader) */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.47, 0]} receiveShadow>
+        <planeGeometry args={[140, 70]} />
+        <meshStandardMaterial color="#eef3f6" roughness={1} />
+      </mesh>
+      <gridHelper args={[120, 80, "#7ccb5b", "#cdd7df"]} position={[0, -0.45, 0]} />
 
       <ConveyorBelt
         cursorT={cursorT}
@@ -138,8 +130,6 @@ export default function PipelineScene({
         maxPolarAngle={Math.PI * 0.46}
         minAzimuthAngle={-Math.PI * 0.4}
         maxAzimuthAngle={Math.PI * 0.4}
-        enableDamping
-        dampingFactor={0.08}
       />
       <CameraRig focusIndex={selectedIndex} />
     </Canvas>
