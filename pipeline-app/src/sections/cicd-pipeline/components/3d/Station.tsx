@@ -30,6 +30,7 @@ export function Station({
   const running = status === "running";
   const glow = STATUS_COLOR[status];
 
+  const groupRef = useRef<THREE.Group>(null);
   const ringMat = useRef<THREE.MeshStandardMaterial>(null);
   const gear = useRef<THREE.Group>(null);
   const lanes = useRef<THREE.Group>(null);
@@ -40,43 +41,57 @@ export function Station({
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
-    if (ringMat.current) {
-      const base = running ? 0.9 : status === "success" ? 0.5 : 0.22;
-      ringMat.current.emissiveIntensity = base + Math.sin(t * 3) * (running ? 0.4 : 0.1);
+    // Gentle idle bob — every station is alive, even when not running.
+    if (groupRef.current) {
+      groupRef.current.position.y = position.y + Math.sin(t * 1.6 + index) * 0.05;
     }
-    if (gear.current) gear.current.rotation.z += running ? 0.07 : 0.015;
-    if (lanes.current && running) {
+    if (ringMat.current) {
+      const base = running ? 0.95 : status === "success" ? 0.6 : 0.32;
+      ringMat.current.emissiveIntensity = base + Math.sin(t * 3) * (running ? 0.45 : 0.2);
+    }
+    // Gears always turn; faster while running.
+    if (gear.current) gear.current.rotation.z += running ? 0.08 : 0.022;
+    // Build lanes always shimmer; brighter while running.
+    if (lanes.current) {
+      const amp = running ? 1.1 : 0.55;
       lanes.current.children.forEach((lane, i) => {
         const m = (lane as THREE.Mesh).material as THREE.MeshStandardMaterial;
-        m.emissiveIntensity = 0.2 + ((Math.sin(t * 4 - i * 1.1) + 1) / 2) * 1.1;
+        m.emissiveIntensity = 0.25 + ((Math.sin(t * 4 - i * 1.1) + 1) / 2) * amp;
       });
     }
+    // Container layers slowly spin idle; assemble while running.
     if (layers.current) {
       layers.current.children.forEach((layer, i) => {
         const target = 0.14 + i * 0.18;
         const rise = running ? target * ((Math.sin(t * 1.6 - i) + 1) / 2) : target;
         layer.position.y = THREE.MathUtils.lerp(layer.position.y, rise, 0.1);
+        layer.rotation.y += running ? 0.02 : 0.005;
       });
     }
+    // Infra frames breathe idle; rise while running.
     if (pillars.current) {
       pillars.current.children.forEach((p, i) => {
-        const target = running ? 0.2 + ((i % 3) + 1) * 0.18 : status === "success" ? 0.3 : 0.05;
+        const idle = 0.18 + (Math.sin(t * 2 + i) + 1) * 0.06;
+        const target = running ? 0.2 + ((i % 3) + 1) * 0.18 : status === "success" ? 0.3 : idle;
         p.scale.y = THREE.MathUtils.lerp(p.scale.y, target, 0.08);
       });
     }
-    if (pods.current && (running || status === "success")) {
+    // Pods sway idle; flip old→new while running.
+    if (pods.current) {
       pods.current.children.forEach((pod, i) => {
-        const flip = running ? Math.sin(t * 2.2 - i * 0.8) * 0.5 : Math.PI;
+        const flip = running ? Math.sin(t * 2.2 - i * 0.8) * 0.5 : Math.sin(t * 1.2 + i) * 0.22;
         pod.rotation.x = THREE.MathUtils.lerp(pod.rotation.x, flip, 0.06);
       });
     }
-    if (scanner.current) scanner.current.rotation.y += running ? 0.06 : 0.02;
+    // Dish/scanner always sweeps.
+    if (scanner.current) scanner.current.rotation.y += running ? 0.07 : 0.03;
   });
 
   const labelW = Math.max(2.1, stage.title.length * 0.17 + 0.7);
 
   return (
     <group
+      ref={groupRef}
       position={position}
       onClick={(e) => {
         e.stopPropagation();
@@ -167,10 +182,20 @@ function Machine({
             <boxGeometry args={[0.5, 0.4, 0.08]} />
             <meshStandardMaterial color="#16324a" emissive={accent} emissiveIntensity={0.4} />
           </mesh>
+          {/* code lines on the monitor */}
+          {[0, 1, 2].map((k) => (
+            <mesh key={k} position={[0.5, 0.5 - k * 0.1, 0.05]}>
+              <boxGeometry args={[0.32 - k * 0.05, 0.035, 0.02]} />
+              <meshBasicMaterial
+                color={["#34d399", "#fbbf24", "#38bdf8"][k]}
+                toneMapped={false}
+              />
+            </mesh>
+          ))}
         </group>
       );
 
-    case "mill": // Build — machine box with gear
+    case "mill": // Build — machine box with gear + chimney
       return (
         <group position={[0, 0.4, 0]}>
           <mesh castShadow>
@@ -189,6 +214,15 @@ function Machine({
               <meshStandardMaterial color={accent} />
             </mesh>
           </group>
+          {/* chimney + glowing vent */}
+          <mesh position={[-0.32, 0.6, -0.22]} castShadow>
+            <cylinderGeometry args={[0.1, 0.13, 0.55, 10]} />
+            <meshStandardMaterial color="#9fb6c4" metalness={0.5} roughness={0.4} />
+          </mesh>
+          <mesh position={[-0.32, 0.9, -0.22]}>
+            <sphereGeometry args={[0.12, 10, 10]} />
+            <meshBasicMaterial color="#fff" transparent opacity={0.5} toneMapped={false} />
+          </mesh>
         </group>
       );
 
@@ -255,6 +289,15 @@ function Machine({
             <coneGeometry args={[0.7, 0.4, 4]} />
             <meshStandardMaterial color={accent} />
           </mesh>
+          {/* flagpole + flag */}
+          <mesh position={[0, 0.95, 0]}>
+            <cylinderGeometry args={[0.02, 0.02, 0.5, 6]} />
+            <meshStandardMaterial color="#7b8a99" metalness={0.4} />
+          </mesh>
+          <mesh position={[0.16, 1.05, 0]}>
+            <boxGeometry args={[0.3, 0.18, 0.02]} />
+            <meshBasicMaterial color={glow} toneMapped={false} />
+          </mesh>
           <group ref={refs.pods} position={[0, -0.05, 0.5]}>
             {Array.from({ length: 4 }).map((_, i) => (
               <mesh key={i} position={[((i % 2) - 0.5) * 0.5, 0, (i < 2 ? -0.12 : 0.12)]}>
@@ -302,7 +345,20 @@ function Machine({
               <planeGeometry args={[0.8, 0.5]} />
               <meshBasicMaterial color={glow} toneMapped={false} transparent opacity={0.7} />
             </mesh>
+            {/* radar dish on a mast */}
+            <mesh position={[0.34, 0.78, 0]} rotation={[Math.PI / 2.6, 0, 0]}>
+              <coneGeometry args={[0.24, 0.12, 18, 1, true]} />
+              <meshStandardMaterial color={accent} side={THREE.DoubleSide} metalness={0.3} roughness={0.5} />
+            </mesh>
+            <mesh position={[0.34, 0.64, 0]}>
+              <cylinderGeometry args={[0.025, 0.025, 0.28, 6]} />
+              <meshStandardMaterial color="#9fb6c4" />
+            </mesh>
           </group>
+          <mesh position={[0.34, 0.5, 0]}>
+            <boxGeometry args={[0.1, 0.12, 0.1]} />
+            <meshStandardMaterial color={WALL} />
+          </mesh>
         </group>
       );
   }

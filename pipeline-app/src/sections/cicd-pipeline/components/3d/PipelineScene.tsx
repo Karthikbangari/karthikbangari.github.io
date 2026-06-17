@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { ConveyorBelt } from "./ConveyorBelt";
+import { ForkEnd } from "./ForkEnd";
 import { Station } from "./Station";
 import { ArtifactTravel } from "./ArtifactTravel";
 import { CameraRig } from "./CameraRig";
@@ -58,7 +59,7 @@ export default function PipelineScene({
       shadows={high}
       dpr={high ? [1, 1.75] : [1, 1.25]}
       gl={{ alpha: true, antialias: high, powerPreference: "high-performance" }}
-      camera={{ position: [7, 9.5, 12], zoom: 40, near: 0.1, far: 200 }}
+      camera={{ position: [7, 9.5, 12], zoom: 32, near: 0.1, far: 200 }}
       frameloop={active ? "always" : "never"}
       style={{ background: "transparent" }}
     >
@@ -89,6 +90,7 @@ export default function PipelineScene({
       {/* Labels use troika text (font fetched async). Isolate that suspension so
           the belt + machines render immediately even if the font is slow. */}
       <Suspense fallback={null}>
+      <ForkEnd />
       {PIPELINE_STAGES.map((stage, i) => (
         <Station
           key={stage.id}

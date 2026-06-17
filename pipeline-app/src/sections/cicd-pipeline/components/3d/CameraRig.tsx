@@ -21,7 +21,7 @@ export function CameraRig({ focusIndex }: { focusIndex: number | null }) {
     const station = stationPositions[focusIndex];
     if (!station) return;
     const tween = gsap.to(controls.target, {
-      x: station.x,
+      x: station.x + 1.5,
       y: 0.4,
       z: 0,
       duration: 1.0,
