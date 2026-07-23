@@ -1,12 +1,53 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { navItems } from "../data/navigation";
 import StickyNote from "./StickyNote";
+import { gsap, ScrollTrigger, ensureGsapRegistered, prefersReducedMotion } from "../lib/motion";
 
 export default function QuickNav() {
   const [active, setActive] = useState<string | null>(null);
+  const hoverLockRef = useRef(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    ensureGsapRegistered();
+    if (prefersReducedMotion()) return;
+
+    const ctx = gsap.context(() => {
+      ScrollTrigger.matchMedia({
+        "(min-width: 768px)": () => {
+          if (!sectionRef.current) return;
+
+          ScrollTrigger.create({
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "+=180%",
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              if (hoverLockRef.current) return;
+              const idx = Math.min(
+                navItems.length - 1,
+                Math.floor(self.progress * navItems.length),
+              );
+              setActive(navItems[idx].href);
+            },
+            onLeaveBack: () => setActive(null),
+          });
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  const withHoverLock = (href: string | null) => {
+    hoverLockRef.current = href !== null;
+    setActive(href);
+  };
 
   return (
-    <section className="relative flex min-h-screen flex-col justify-center bg-gradient-to-br from-blue to-deep-blue px-6 py-20">
+    <section ref={sectionRef} className="relative flex min-h-screen flex-col justify-center bg-gradient-to-br from-blue to-deep-blue px-6 py-20">
       <div className="mx-auto w-full max-w-6xl">
         <div className="mb-10 flex items-start justify-between gap-6">
           <h2 className="font-display text-sm uppercase tracking-[0.2em] text-paper/80">
@@ -28,10 +69,10 @@ export default function QuickNav() {
                 <li key={item.href}>
                   <a
                     href={item.href}
-                    onMouseEnter={() => setActive(item.href)}
-                    onMouseLeave={() => setActive(null)}
-                    onFocus={() => setActive(item.href)}
-                    onBlur={() => setActive(null)}
+                    onMouseEnter={() => withHoverLock(item.href)}
+                    onMouseLeave={() => withHoverLock(null)}
+                    onFocus={() => withHoverLock(item.href)}
+                    onBlur={() => withHoverLock(null)}
                     className={`group flex flex-col gap-1 py-6 transition-opacity sm:flex-row sm:items-baseline sm:gap-6 ${
                       isMuted ? "opacity-40" : "opacity-100"
                     }`}
