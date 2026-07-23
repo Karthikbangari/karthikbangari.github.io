@@ -3,7 +3,7 @@ import type { Metric } from "../data/metrics";
 
 const numberPattern = /^(\d+(?:\.\d+)?)(.*)$/;
 
-function CountUp({ value, inView }: { value: string; inView: boolean }) {
+export function CountUp({ value, inView }: { value: string; inView: boolean }) {
   const match = value.match(numberPattern);
   const [display, setDisplay] = useState(match ? "0" + match[2] : value);
 
@@ -41,14 +41,35 @@ function CountUp({ value, inView }: { value: string; inView: boolean }) {
   return <>{display}</>;
 }
 
-export default function MetricCard({ metric, inView }: { metric: Metric; inView: boolean }) {
+export default function MetricCard({
+  metric,
+  inView,
+  rotate = "0deg",
+  big = false,
+}: {
+  metric: Metric;
+  inView: boolean;
+  rotate?: string;
+  big?: boolean;
+}) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-surface/60 p-6">
-      <div className="font-display text-4xl font-bold text-signal sm:text-5xl">
+    <div
+      className="rounded-sm bg-paper px-6 py-5 text-navy shadow-[0_10px_24px_rgba(12,12,12,0.18)]"
+      style={{ transform: `rotate(${rotate})` }}
+    >
+      <div
+        className={`font-display font-bold text-blue ${
+          big ? "text-6xl sm:text-8xl" : "text-3xl sm:text-4xl"
+        }`}
+      >
         <CountUp value={metric.value} inView={inView} />
       </div>
-      <div className="mt-3 font-display text-base font-semibold text-paper">{metric.label}</div>
-      <p className="mt-1 text-sm text-muted">{metric.description}</p>
+      <div
+        className={`mt-2 font-display font-semibold text-navy ${big ? "text-xl sm:text-2xl" : "text-sm"}`}
+      >
+        {metric.label}
+      </div>
+      <p className={`mt-1 text-muted-ink ${big ? "text-base" : "text-xs"}`}>{metric.description}</p>
     </div>
   );
 }

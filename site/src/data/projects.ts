@@ -1,6 +1,7 @@
 export type CaseStudy = {
   slug: string;
   index: string;
+  theme: "blue" | "cream" | "split";
   title: string;
   tags: string[];
   problem: string[];
@@ -10,13 +11,14 @@ export type CaseStudy = {
   impact: string[];
   incidentTimeline?: { time: string; event: string }[];
   evidence: string[];
-  improveNext: string; // TODO(real-assets): placeholder — needs Karthik's real reflection, not fabricated
+  improveNext: string; // placeholder — needs Karthik's real reflection, not fabricated
 };
 
 export const caseStudies: CaseStudy[] = [
   {
     slug: "gitops-delivery-platform",
     index: "01",
+    theme: "blue",
     title: "From 3-hour deployments to releases in under 30 minutes.",
     tags: ["Amazon EKS", "Jenkins", "Docker", "Helm", "ArgoCD", "GitOps", "Snyk", "Prometheus", "Grafana"],
     problem: [
@@ -62,6 +64,7 @@ export const caseStudies: CaseStudy[] = [
   {
     slug: "terraform-aws-platform",
     index: "02",
+    theme: "cream",
     title: "Infrastructure without repetitive console work.",
     tags: ["Terraform", "AWS", "VPC", "EKS", "RDS", "S3", "IAM", "Secrets Manager"],
     problem: [
@@ -102,6 +105,7 @@ export const caseStudies: CaseStudy[] = [
   {
     slug: "production-observability",
     index: "03",
+    theme: "split",
     title: "Finding failures before users report them.",
     tags: ["Prometheus", "Grafana", "CloudWatch", "SNS", "ELK", "Runbooks", "SLI/SLO"],
     problem: [

@@ -1,12 +1,11 @@
 import { Github, Linkedin, Mail, FileDown, ArrowRight } from "lucide-react";
 import { links } from "../data/links";
-import { profile } from "../data/profile";
 
 export default function Contact() {
   return (
     <section
       id="contact"
-      className="flex min-h-screen flex-col justify-between bg-black px-6 py-16 text-paper"
+      className="flex min-h-screen flex-col justify-center bg-navy px-6 py-16 text-paper"
     >
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center gap-10 lg:flex-row lg:items-center lg:justify-between">
         <div>
@@ -55,13 +54,6 @@ export default function Contact() {
             Download Resume
           </a>
         </div>
-      </div>
-
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-1 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-muted">
-          Bye, have a great day. Hoping this convinced you I'm worth an interview.
-        </p>
-        <p className="font-hand text-3xl text-paper">{profile.name}</p>
       </div>
     </section>
   );

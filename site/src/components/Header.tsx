@@ -24,10 +24,10 @@ export default function Header() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-navy/85 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-navy/10 bg-cream/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <a href="#top" className="font-mono text-sm font-semibold tracking-wide text-paper">
-          KARTHIK <span className="text-signal">/</span> DEVOPS
+        <a href="#top" className="font-mono text-sm font-semibold tracking-wide text-navy">
+          KARTHIK <span className="text-blue">/</span> DEVOPS
         </a>
 
         <nav className="hidden md:flex items-center gap-7" aria-label="Primary">
@@ -35,7 +35,7 @@ export default function Header() {
             <a
               key={item.href}
               href={item.href}
-              className="font-mono text-xs uppercase tracking-wider text-muted hover:text-paper transition-colors"
+              className="font-mono text-xs uppercase tracking-wider text-muted-ink hover:text-blue transition-colors"
             >
               {item.label}
             </a>
@@ -45,7 +45,7 @@ export default function Header() {
         <div className="hidden md:flex items-center gap-4">
           <a
             href={links.resume}
-            className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-muted hover:text-paper transition-colors"
+            className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-muted-ink hover:text-blue transition-colors"
           >
             <FileDown size={14} aria-hidden="true" />
             Resume
@@ -55,7 +55,7 @@ export default function Header() {
             target="_blank"
             rel="noreferrer"
             aria-label="GitHub profile"
-            className="text-muted hover:text-paper transition-colors"
+            className="text-muted-ink hover:text-blue transition-colors"
           >
             <Github size={18} />
           </a>
@@ -64,7 +64,7 @@ export default function Header() {
         <button
           ref={toggleRef}
           type="button"
-          className="md:hidden text-paper"
+          className="md:hidden text-navy"
           aria-expanded={open}
           aria-controls="mobile-menu"
           aria-label={open ? "Close menu" : "Open menu"}
@@ -78,7 +78,7 @@ export default function Header() {
         <div
           id="mobile-menu"
           ref={menuRef}
-          className="md:hidden border-t border-white/10 bg-navy px-6 py-6"
+          className="md:hidden border-t border-navy/10 bg-cream px-6 py-6"
         >
           <nav className="flex flex-col gap-5" aria-label="Mobile">
             {headerNavItems.map((item) => (
@@ -86,7 +86,7 @@ export default function Header() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="font-mono text-sm uppercase tracking-wider text-paper"
+                className="font-mono text-sm uppercase tracking-wider text-navy"
               >
                 {item.label}
               </a>
@@ -94,7 +94,7 @@ export default function Header() {
             <a
               href={links.resume}
               onClick={() => setOpen(false)}
-              className="font-mono text-sm uppercase tracking-wider text-signal"
+              className="font-mono text-sm uppercase tracking-wider text-blue"
             >
               Resume
             </a>
@@ -103,7 +103,7 @@ export default function Header() {
               target="_blank"
               rel="noreferrer"
               onClick={() => setOpen(false)}
-              className="font-mono text-sm uppercase tracking-wider text-paper"
+              className="font-mono text-sm uppercase tracking-wider text-navy"
             >
               GitHub
             </a>

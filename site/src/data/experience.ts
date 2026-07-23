@@ -24,7 +24,7 @@ export const experienceStages: ExperienceStage[] = [
   {
     year: "2024",
     title: "DevOps Engineer",
-    dateRange: "March 2024 – present",
+    dateRange: "March 2024 – April 2026",
     promotion: true,
     highlights: [
       "Owned delivery automation",

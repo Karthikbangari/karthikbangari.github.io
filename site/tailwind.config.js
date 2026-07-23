@@ -4,15 +4,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        navy: "#080D1A",
-        surface: "#111827",
-        paper: "#F4F1E8",
-        blue: "#3157FF",
-        // Lighter tint for flowing text on dark backgrounds — #3157FF fails
-        // WCAG AA (4.5:1) for normal-size text on navy/surface; this passes.
+        // Editorial blue-and-cream identity (not an all-dark SaaS palette).
+        navy: "#0C0C0C",
+        surface: "#1A1A1A",
+        cream: "#F4EFE5",
+        paper: "#FFFDF7",
+        blue: "#173DE5",
+        "deep-blue": "#0D28B8",
+        // Lighter tint for flowing text ON NAVY/SURFACE — plain "blue" fails
+        // WCAG AA (4.5:1) for normal-size text there; this passes (5.7:1).
+        // For text ON CREAM/PAPER, use plain "blue" instead (6.5:1) — "blue-light" fails there (3:1).
         "blue-light": "#6581FF",
-        signal: "#C9FF3D",
-        muted: "#9DA7BC",
+        signal: "#C8FF22",
+        // "muted" is for secondary text ON DARK (navy/surface/blue) — 5.7:1 on navy.
+        // Fails on cream/paper — use "muted-ink" there instead (6.5:1 on cream).
+        muted: "#8A8A8A",
+        "muted-ink": "#555555",
       },
       fontFamily: {
         display: ["Sora", "system-ui", "sans-serif"],
