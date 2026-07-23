@@ -1,7 +1,8 @@
 export const links = {
-  // Confirmed: this is the actual GitHub Pages repo owner (git remote origin).
+  // All confirmed against Karthik's CV (references/Karthik_Bangari_DevOps_CV_EU.pdf).
   github: "https://github.com/Karthikbangari",
-  linkedin: "https://www.linkedin.com/in/karthikbangari", // TODO(real-assets): guessed handle, not confirmed
-  email: "mailto:TODO@example.com", // TODO(real-assets): plug in Karthik's real contact email
-  resume: "/resume/Karthik_Bangari_DevOps_CV.pdf", // TODO(real-assets): resume file not yet added to the repo
+  linkedin: "https://www.linkedin.com/in/karthikbangari",
+  email: "mailto:bangarikarthik11@gmail.com",
+  phone: "+421 904 675 944",
+  resume: "/resume/Karthik_Bangari_DevOps_CV.pdf",
 };

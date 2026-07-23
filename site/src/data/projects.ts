@@ -44,7 +44,9 @@ export const caseStudies: CaseStudy[] = [
       "Rollback through Git history",
     ],
     controls: [
-      "Security scanning gated before image build (Snyk)",
+      "Automated vulnerability scanning (Snyk, AWS Security Hub) gating every build before production release",
+      "IAM least-privilege access enforced across all environments",
+      "KMS encryption enforced across all environments",
       "Readiness/liveness probes before traffic is routed",
       "Git-history-based rollback instead of manual undo",
     ],
@@ -101,7 +103,7 @@ export const caseStudies: CaseStudy[] = [
     slug: "production-observability",
     index: "03",
     title: "Finding failures before users report them.",
-    tags: ["Prometheus", "Grafana", "CloudWatch", "ELK", "Runbooks", "SLI/SLO"],
+    tags: ["Prometheus", "Grafana", "CloudWatch", "SNS", "ELK", "Runbooks", "SLI/SLO"],
     problem: [
       "Alerts without sufficient context",
       "Slow root-cause identification",
@@ -125,8 +127,8 @@ export const caseStudies: CaseStudy[] = [
     ],
     controls: [
       "Alerts scoped to SLIs/SLOs instead of raw thresholds",
-      "Runbooks attached to alerts for faster triage",
-      "Incident documentation maintained after each event",
+      "CloudWatch alarms + SNS alerting for proactive incident response",
+      "Runbooks and root-cause analysis documentation maintained after each event",
     ],
     impact: ["50% MTTR reduction", "Faster incident triage", "More proactive production support"],
     incidentTimeline: [

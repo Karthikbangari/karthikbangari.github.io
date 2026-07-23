@@ -14,7 +14,7 @@ export default function BuildLab() {
 
       <div className="mt-10 rounded-2xl border border-signal/30 bg-surface/60 p-6 sm:p-8">
         <span className="rounded-full border border-signal/40 px-3 py-1 font-mono text-xs text-signal">
-          Built by me — idea to release
+          {featuredBuild.tagline}
         </span>
         <h3 className="mt-4 font-display text-2xl font-bold text-paper sm:text-3xl">
           {featuredBuild.name}

@@ -9,35 +9,35 @@ export type LabProject = {
 
 export const featuredBuild = {
   name: "Git File Explainer",
-  tagline: "Built by me, idea to release.",
+  tagline: "Founder & Sole Developer — solo-shipped, idea to release.",
   description:
-    "A Chrome extension that explains source files directly inside GitHub and GitLab: file-purpose summaries, key points, a complexity rating and follow-up questions, across more than 21 file types.",
+    "An open-source Manifest V3 Chrome extension, live on the Chrome Web Store, that explains code directly on GitHub and GitLab blob pages via an injected sidebar: file-purpose summaries, key-point highlighting, a complexity rating, follow-up Q&A and shareable summaries across 21+ file types including .tf, .ts, .py, .go, .java and .cpp.",
   features: [
     "File-purpose summaries",
     "Key-point highlighting",
     "Complexity rating",
-    "Follow-up questions",
-    "Shareable explanations",
+    "Follow-up Q&A",
+    "Shareable summaries",
     "21+ supported file types",
     "GitHub and GitLab integration",
     "Manifest V3 architecture",
   ],
-  chromeStoreUrl: "", // TODO(real-assets): add once verified
+  chromeStoreUrl: "", // TODO(real-assets): confirmed live on the Chrome Web Store per CV — add the direct listing URL
   repo: "", // TODO(real-assets): add repo URL
 };
 
 export const labProjects: LabProject[] = [
   {
-    name: "EKS GitOps Sandbox",
-    what: "A personal EKS environment for testing GitOps delivery patterns before they reach production case studies.",
-    tech: ["EKS", "ArgoCD", "Helm"],
-    status: "TODO(real-assets): confirm status",
+    name: "Kubernetes GitOps Delivery Platform",
+    what: "A declarative, auditable GitOps delivery platform on Amazon EKS with Helm and ArgoCD, using a Horizontal Pod Autoscaler to handle variable load and improve resilience under peak traffic.",
+    tech: ["Amazon EKS", "Helm", "ArgoCD", "HPA"],
+    status: "Personal project (per CV)",
   },
   {
-    name: "Terraform Module Library",
-    what: "Reusable modules for VPC, EKS, RDS, S3 and IAM, versioned and tested independently of any one project.",
-    tech: ["Terraform", "AWS"],
-    status: "TODO(real-assets): confirm status",
+    name: "Highly Available 3-Tier AWS Architecture",
+    what: "A multi-AZ, 3-tier architecture with horizontal auto-scaling, provisioned with fully version-controlled, repeatable Terraform; sensitive configuration managed via AWS Secrets Manager.",
+    tech: ["Terraform", "AWS", "Multi-AZ", "Secrets Manager"],
+    status: "Personal project (per CV)",
   },
   {
     name: "Kubernetes Troubleshooting Playground",

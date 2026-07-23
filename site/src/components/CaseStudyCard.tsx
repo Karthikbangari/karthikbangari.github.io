@@ -43,10 +43,16 @@ export default function CaseStudyCard({ study }: { study: CaseStudy }) {
   const panelId = `case-study-${study.slug}`;
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-surface/60">
+    <div className="relative rounded-2xl border border-white/10 bg-surface/60">
+      <span
+        aria-hidden="true"
+        className="absolute -left-4 -top-4 flex h-10 w-10 items-center justify-center rounded-full border-2 border-signal bg-navy font-hand text-xl font-bold text-signal sm:-left-5 sm:-top-5 sm:h-12 sm:w-12 sm:text-2xl"
+      >
+        {study.index.replace(/^0/, "")}
+      </span>
+
       <div className="p-6 sm:p-8">
-        <div className="flex items-center gap-3 font-mono text-xs text-signal">
-          <span>{study.index}</span>
+        <div className="flex items-center gap-3 pl-6 font-mono text-xs text-signal sm:pl-8">
           <span className="text-muted">
             {study.tags.slice(0, 3).join(" · ")}
             {study.tags.length > 3 ? " · …" : ""}

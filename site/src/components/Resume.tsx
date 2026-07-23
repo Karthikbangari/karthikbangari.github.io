@@ -15,10 +15,10 @@ export default function ResumeSection() {
         <div className="rounded-2xl border border-white/10 bg-surface/60 p-6">
           <Award className="text-signal" size={22} />
           <h3 className="mt-3 font-display text-lg font-semibold text-paper">
-            HashiCorp Certified: Terraform Associate
+            HashiCorp Certified: Terraform Associate (2026)
           </h3>
           <p className="mt-2 text-sm text-muted">
-            {/* TODO(real-assets): add certificate verification link and badge image */}
+            {/* TODO(real-assets): add Credly/verification link and badge image */}
             Verification link and badge — add once available.
           </p>
         </div>
@@ -46,7 +46,6 @@ export default function ResumeSection() {
               Open Resume
             </a>
           </div>
-          {/* TODO(real-assets): resume PDF is not yet in the repo at site/public/resume/ */}
         </div>
       </div>
     </section>

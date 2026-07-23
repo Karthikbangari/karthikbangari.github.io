@@ -18,6 +18,10 @@ export default {
         display: ["Sora", "system-ui", "sans-serif"],
         body: ["\"Plus Jakarta Sans\"", "system-ui", "sans-serif"],
         mono: ["\"JetBrains Mono\"", "ui-monospace", "monospace"],
+        // Handwritten-style, used only for annotations/arrows/notes and the
+        // hero signature wordmark — never for body copy.
+        hand: ["Caveat", "cursive"],
+        note: ["Kalam", "cursive"],
       },
     },
   },
