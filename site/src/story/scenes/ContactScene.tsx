@@ -2,7 +2,7 @@ import { Github, Linkedin, Mail, FileDown, ArrowRight, Award } from "lucide-reac
 import { links } from "../../data/links";
 import { profile } from "../../data/profile";
 
-export type ContactRefId = "wordmark" | "cue" | "links" | "footerBar" | "signature";
+export type ContactRefId = "wordmark" | "tagline" | "cue" | "links" | "footerBar" | "signature";
 
 export default function ContactScene({
   registerRef,
@@ -19,6 +19,14 @@ export default function ContactScene({
             <span className="font-display text-6xl font-bold text-blue sm:text-8xl">Contact</span>
             <span className="-ml-4 font-hand text-6xl text-paper sm:text-8xl">Me</span>
           </div>
+
+          <p
+            ref={(el) => registerRef("tagline", el)}
+            className="max-w-md text-center text-sm text-paper/70 sm:text-base"
+          >
+            Need help building reliable cloud infrastructure, faster delivery pipelines or
+            observable Kubernetes platforms?
+          </p>
 
           <p
             ref={(el) => registerRef("cue", el)}
