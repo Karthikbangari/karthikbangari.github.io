@@ -4,7 +4,9 @@ export type SceneId =
   | "lineArt"
   | "projectIntro"
   | "bestWork"
-  | "buildLab"
+  | "buildLabIntro"
+  | "buildLabGrid"
+  | "buildLabStack"
   | "contact";
 
 export const SCENES: { id: SceneId; navLabel: string }[] = [
@@ -13,7 +15,9 @@ export const SCENES: { id: SceneId; navLabel: string }[] = [
   { id: "lineArt", navLabel: "Craft" },
   { id: "projectIntro", navLabel: "Projects" },
   { id: "bestWork", navLabel: "Best Work" },
-  { id: "buildLab", navLabel: "Build Lab" },
+  { id: "buildLabIntro", navLabel: "Build Lab" },
+  { id: "buildLabGrid", navLabel: "Also Building" },
+  { id: "buildLabStack", navLabel: "Tech Stack" },
   { id: "contact", navLabel: "Contact" },
 ];
 
@@ -25,6 +29,8 @@ export const SCENE_WEIGHT: Record<SceneId, number> = {
   lineArt: 0.7,
   projectIntro: 0.5,
   bestWork: 2,
-  buildLab: 0.9,
+  buildLabIntro: 0.6,
+  buildLabGrid: 0.6,
+  buildLabStack: 0.5,
   contact: 1,
 };

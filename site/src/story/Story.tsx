@@ -8,7 +8,12 @@ import OriginScene, { type OriginBeatId } from "./scenes/OriginScene";
 import LineArtScene from "./scenes/LineArtScene";
 import ProjectIntroScene, { type ProjectIntroRefId } from "./scenes/ProjectIntroScene";
 import BestWorkScene from "./scenes/BestWorkScene";
-import BuildLabScene, { type BuildLabRefId } from "./scenes/BuildLabScene";
+import {
+  BuildLabIntroScene,
+  BuildLabGridScene,
+  BuildLabStackScene,
+  type BuildLabIntroRefId,
+} from "./scenes/BuildLabScene";
 import ContactScene, { type ContactRefId } from "./scenes/ContactScene";
 
 const SCENE_COMPONENTS: Record<SceneId, React.ComponentType<any>> = {
@@ -17,7 +22,9 @@ const SCENE_COMPONENTS: Record<SceneId, React.ComponentType<any>> = {
   lineArt: LineArtScene,
   projectIntro: ProjectIntroScene,
   bestWork: BestWorkScene,
-  buildLab: BuildLabScene,
+  buildLabIntro: BuildLabIntroScene,
+  buildLabGrid: BuildLabGridScene,
+  buildLabStack: BuildLabStackScene,
   contact: ContactScene,
 };
 
@@ -48,12 +55,10 @@ export default function Story({ active }: { active: boolean }) {
   const bestWorkTrackRef = useRef<HTMLDivElement | null>(null);
   const bestWorkPanelRefs = useRef<(HTMLDivElement | null)[]>([]);
   const bestWorkDotRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const buildLabRefs = useRef<Record<BuildLabRefId, HTMLElement | null>>({
+  const buildLabIntroRefs = useRef<Record<BuildLabIntroRefId, HTMLElement | null>>({
     eyebrow: null,
     headline: null,
     featured: null,
-    grid: null,
-    stack: null,
   });
   const contactRefs = useRef<Record<ContactRefId, HTMLElement | null>>({
     wordmark: null,
@@ -142,13 +147,7 @@ export default function Story({ active }: { active: boolean }) {
       gsap.set(bestWorkDotRefs.current[0], { backgroundColor: "#C8FF22", scale: 1.6 });
 
       gsap.set(
-        [
-          buildLabRefs.current.eyebrow,
-          buildLabRefs.current.headline,
-          buildLabRefs.current.featured,
-          buildLabRefs.current.grid,
-          buildLabRefs.current.stack,
-        ],
+        [buildLabIntroRefs.current.eyebrow, buildLabIntroRefs.current.headline, buildLabIntroRefs.current.featured],
         { autoAlpha: 0, y: 16 },
       );
 
@@ -376,17 +375,16 @@ export default function Story({ active }: { active: boolean }) {
             .to(projectIntroRefs.current.cue, { autoAlpha: 1, y: 0, duration: 0.2 }, introStart + 0.36);
         }
 
-        if (s.id === "buildLab") {
-          // "After Hours" build spotlight — folds in the fallback's Tech
-          // Stack (skill chips) and the lab projects grid that Story mode
-          // otherwise has no slot for (see HANDOFF.md §4/§6 on this
-          // judgment call). Staggers in on entry same as projectIntro.
-          const buildStart = cursor + weight * 0.05;
-          tl.to(buildLabRefs.current.eyebrow, { autoAlpha: 1, y: 0, duration: 0.2 }, buildStart)
-            .to(buildLabRefs.current.headline, { autoAlpha: 1, y: 0, duration: 0.3 }, buildStart + 0.05)
-            .to(buildLabRefs.current.featured, { autoAlpha: 1, y: 0, duration: 0.3 }, buildStart + 0.18)
-            .to(buildLabRefs.current.grid, { autoAlpha: 1, y: 0, duration: 0.25 }, buildStart + 0.3)
-            .to(buildLabRefs.current.stack, { autoAlpha: 1, y: 0, duration: 0.25 }, buildStart + 0.4);
+        if (s.id === "buildLabIntro") {
+          // "After Hours" build spotlight intro — folds in the featured
+          // build card that Story mode otherwise has no slot for (see
+          // HANDOFF.md §4/§6 on this judgment call). Staggers in on entry
+          // same as projectIntro; the project grid and tech stack now live
+          // on their own following pages instead of cramming in here too.
+          const buildStart = cursor + weight * 0.1;
+          tl.to(buildLabIntroRefs.current.eyebrow, { autoAlpha: 1, y: 0, duration: 0.2 }, buildStart)
+            .to(buildLabIntroRefs.current.headline, { autoAlpha: 1, y: 0, duration: 0.3 }, buildStart + 0.05)
+            .to(buildLabIntroRefs.current.featured, { autoAlpha: 1, y: 0, duration: 0.3 }, buildStart + 0.18);
         }
 
         if (s.id === "contact") {
@@ -484,8 +482,8 @@ export default function Story({ active }: { active: boolean }) {
                   registerPanel={(i, el) => (bestWorkPanelRefs.current[i] = el)}
                   registerDot={(i, el) => (bestWorkDotRefs.current[i] = el)}
                 />
-              ) : s.id === "buildLab" ? (
-                <BuildLabScene registerRef={(id, el) => (buildLabRefs.current[id] = el)} />
+              ) : s.id === "buildLabIntro" ? (
+                <BuildLabIntroScene registerRef={(id, el) => (buildLabIntroRefs.current[id] = el)} />
               ) : s.id === "contact" ? (
                 <ContactScene registerRef={(id, el) => (contactRefs.current[id] = el)} />
               ) : (

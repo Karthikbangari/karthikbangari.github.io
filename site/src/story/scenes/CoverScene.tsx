@@ -9,7 +9,6 @@ import { gsap, ensureGsapRegistered, prefersReducedMotion } from "../../lib/moti
 const MICRO_STORY = [
   { label: "Started as", value: "Junior DevOps Engineer" },
   { label: "Became", value: "DevOps Engineer" },
-  { label: "Building toward", value: "Platform / SRE Engineering" },
 ];
 
 function ReliabilityGraph({

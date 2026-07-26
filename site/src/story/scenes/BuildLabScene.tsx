@@ -1,12 +1,12 @@
 import { featuredBuild, labProjects } from "../../data/lab";
 import { skillGroups } from "../../data/skills";
 
-export type BuildLabRefId = "eyebrow" | "headline" | "featured" | "grid" | "stack";
+export type BuildLabIntroRefId = "eyebrow" | "headline" | "featured";
 
-export default function BuildLabScene({
+export function BuildLabIntroScene({
   registerRef,
 }: {
-  registerRef: (id: BuildLabRefId, el: HTMLElement | null) => void;
+  registerRef: (id: BuildLabIntroRefId, el: HTMLElement | null) => void;
 }) {
   return (
     <div className="flex h-full w-full flex-col justify-center overflow-hidden bg-gradient-to-br from-blue to-deep-blue px-10 py-16 text-paper">
@@ -28,8 +28,20 @@ export default function BuildLabScene({
           <h3 className="mt-3 font-display text-2xl font-bold text-navy">{featuredBuild.name}</h3>
           <p className="mt-2 max-w-xl text-sm text-muted-ink">{featuredBuild.description}</p>
         </div>
+      </div>
+    </div>
+  );
+}
 
-        <div ref={(el) => registerRef("grid", el)} className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+export function BuildLabGridScene() {
+  return (
+    <div className="flex h-full w-full flex-col justify-center overflow-hidden bg-gradient-to-br from-blue to-deep-blue px-10 py-16 text-paper">
+      <div className="mx-auto w-full max-w-5xl">
+        <p className="font-mono text-xs uppercase tracking-[0.2em] text-signal">Also building</p>
+        <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">
+          A few other things in progress.
+        </h2>
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {labProjects.slice(0, 6).map((p) => (
             <div key={p.name} className="rounded-sm bg-navy/50 p-3">
               <p className="font-display text-sm font-semibold text-paper">{p.name}</p>
@@ -37,8 +49,20 @@ export default function BuildLabScene({
             </div>
           ))}
         </div>
+      </div>
+    </div>
+  );
+}
 
-        <div ref={(el) => registerRef("stack", el)} className="mt-6 flex flex-wrap gap-2">
+export function BuildLabStackScene() {
+  return (
+    <div className="flex h-full w-full flex-col justify-center overflow-hidden bg-gradient-to-br from-blue to-deep-blue px-10 py-16 text-paper">
+      <div className="mx-auto w-full max-w-5xl">
+        <p className="font-mono text-xs uppercase tracking-[0.2em] text-signal">Tech stack</p>
+        <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">
+          What I build with.
+        </h2>
+        <div className="mt-8 flex flex-wrap gap-2">
           {skillGroups
             .flatMap((g) => g.skills)
             .slice(0, 14)

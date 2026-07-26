@@ -1,31 +1,46 @@
 import { profile } from "../../data/profile";
 import { metrics } from "../../data/metrics";
 import { experienceStages } from "../../data/experience";
+import StickyNote from "../../components/StickyNote";
 
 export type OriginBeatId = "bio" | "impact" | "timeline";
 
 function BioBeat() {
   return (
-    <div className="mx-auto flex h-full max-w-6xl flex-col justify-center px-10">
-      <p className="font-mono text-xs uppercase tracking-[0.2em] text-blue">01 — Origin</p>
-      <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-        I started <span className="font-hand text-blue">automating</span> small infrastructure
-        tasks. Then it became a way of thinking.
-      </h2>
+    <div className="mx-auto grid h-full max-w-6xl grid-cols-1 items-center gap-10 px-10 lg:grid-cols-[1fr_300px]">
+      <div>
+        <p className="font-mono text-xs uppercase tracking-[0.2em] text-blue">01 — Origin</p>
+        <h2 className="mt-3 max-w-2xl font-display text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+          I started <span className="font-hand text-blue">automating</span> small infrastructure
+          tasks. Then it became a way of thinking.
+        </h2>
 
-      <div className="mt-8 max-w-2xl space-y-3 text-sm text-muted-ink sm:text-base">
-        <p>
-          I'm a DevOps Engineer with 4 years of experience, based in Bratislava. Started as a
-          Junior DevOps Engineer keeping release pipelines and AWS infrastructure running,
-          migrating 8 legacy applications and automating 30+ servers.
-        </p>
-        <p>
-          That turned into ownership: GitOps delivery, Terraform modules, DevSecOps controls, and
-          observability so incidents get caught before users notice.
-        </p>
+        <div className="mt-8 max-w-2xl space-y-3 text-sm text-muted-ink sm:text-base">
+          <p>
+            I'm a DevOps Engineer with 4 years of experience, based in Bratislava. Started as a
+            Junior DevOps Engineer keeping release pipelines and AWS infrastructure running,
+            migrating 8 legacy applications and automating 30+ servers.
+          </p>
+          <p>
+            That turned into ownership: GitOps delivery, Terraform modules, DevSecOps controls, and
+            observability so incidents get caught before users notice.
+          </p>
+        </div>
+
+        <p className="mt-8 font-note text-lg text-blue">— {profile.name}</p>
       </div>
 
-      <p className="mt-8 font-note text-lg text-blue">— {profile.name}</p>
+      <div className="hidden flex-col items-center gap-5 lg:flex">
+        <div className="rotate-2 bg-paper p-3 shadow-[0_12px_30px_rgba(12,12,12,0.2)]">
+          <div className="h-44 w-44 overflow-hidden">
+            <img src={profile.photo} alt="Karthik Bangari" className="h-full w-full object-cover" />
+          </div>
+          <p className="mt-2 text-center font-note text-base text-navy">Karthik, Bratislava</p>
+        </div>
+        <StickyNote rotate="-2deg" className="w-56 text-xs">
+          Hi, I'm Karthik — I turn fragile infrastructure into something boring (in a good way).
+        </StickyNote>
+      </div>
     </div>
   );
 }
