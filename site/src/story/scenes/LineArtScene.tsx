@@ -9,20 +9,28 @@ const LABELS = [
   { text: "recover", x: 780, y: 190 },
 ];
 
-export default function LineArtScene() {
+export default function LineArtScene({
+  registerPath,
+  registerLabel,
+}: {
+  registerPath: (el: SVGPathElement | null) => void;
+  registerLabel: (index: number, el: SVGTextElement | null) => void;
+}) {
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center overflow-hidden bg-black px-10 text-paper">
+    <div className="flex h-full w-full flex-col items-center justify-center bg-black px-10 text-paper">
       <svg viewBox="0 0 860 260" className="w-full max-w-4xl" aria-hidden="true">
         <path
+          ref={registerPath}
           d={PATH}
           fill="none"
           stroke="#FFFDF7"
           strokeWidth="2.5"
           strokeLinecap="round"
         />
-        {LABELS.map((l) => (
+        {LABELS.map((l, i) => (
           <text
             key={l.text}
+            ref={(el) => registerLabel(i, el)}
             x={l.x}
             y={l.y - 14}
             className="font-note"

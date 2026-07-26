@@ -1,14 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { gsap, ensureGsapRegistered } from "../lib/motion";
+import { caseStudies } from "../data/projects";
 import { SCENES, SCENE_WEIGHT, type SceneId } from "./sceneConfig";
 import StoryNav from "./StoryNav";
 import CoverScene from "./scenes/CoverScene";
-import { OriginBioScene, OriginImpactScene, OriginTimelineScene } from "./scenes/OriginScene";
+import OriginScene, { type OriginBeatId } from "./scenes/OriginScene";
 import LineArtScene from "./scenes/LineArtScene";
 import ProjectIntroScene, { type ProjectIntroRefId } from "./scenes/ProjectIntroScene";
 import BestWorkScene from "./scenes/BestWorkScene";
 import BuildLabScene, { type BuildLabRefId } from "./scenes/BuildLabScene";
 import ContactScene, { type ContactRefId } from "./scenes/ContactScene";
+
+const SCENE_COMPONENTS: Record<SceneId, React.ComponentType<any>> = {
+  cover: CoverScene,
+  origin: OriginScene,
+  lineArt: LineArtScene,
+  projectIntro: ProjectIntroScene,
+  bestWork: BestWorkScene,
+  buildLab: BuildLabScene,
+  contact: ContactScene,
+};
 
 const PX_PER_WEIGHT = 1400;
 
@@ -18,6 +29,13 @@ export default function Story({ active }: { active: boolean }) {
   const sceneRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const gateTopRef = useRef<HTMLDivElement>(null);
   const gateBottomRef = useRef<HTMLDivElement>(null);
+  const originBeatRefs = useRef<Record<OriginBeatId, HTMLDivElement | null>>({
+    bio: null,
+    impact: null,
+    timeline: null,
+  });
+  const lineArtPathRef = useRef<SVGPathElement | null>(null);
+  const lineArtLabelRefs = useRef<(SVGTextElement | null)[]>([]);
   const doorLeftRef = useRef<HTMLDivElement>(null);
   const doorRightRef = useRef<HTMLDivElement>(null);
   const projectIntroRefs = useRef<Record<ProjectIntroRefId, HTMLElement | null>>({
@@ -27,6 +45,9 @@ export default function Story({ active }: { active: boolean }) {
     stack: null,
     cue: null,
   });
+  const bestWorkTrackRef = useRef<HTMLDivElement | null>(null);
+  const bestWorkPanelRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const bestWorkDotRefs = useRef<(HTMLDivElement | null)[]>([]);
   const buildLabRefs = useRef<Record<BuildLabRefId, HTMLElement | null>>({
     eyebrow: null,
     headline: null,
@@ -36,7 +57,6 @@ export default function Story({ active }: { active: boolean }) {
   });
   const contactRefs = useRef<Record<ContactRefId, HTMLElement | null>>({
     wordmark: null,
-    tagline: null,
     cue: null,
     links: null,
     footerBar: null,
@@ -78,6 +98,25 @@ export default function Story({ active }: { active: boolean }) {
       gsap.set(gateTopRef.current, { yPercent: -100 });
       gsap.set(gateBottomRef.current, { yPercent: 100 });
 
+      // Origin's 3 internal beats (bio / impact / timeline) stack the
+      // same way top-level scenes do — bio visible by default since it's
+      // what the cover -> origin gate reveals first.
+      gsap.set(originBeatRefs.current.bio, { autoAlpha: 1, zIndex: 10 });
+      gsap.set([originBeatRefs.current.impact, originBeatRefs.current.timeline], {
+        autoAlpha: 0,
+        zIndex: 0,
+      });
+
+      // LineArt's path starts fully undrawn — measuring length here (at
+      // mount) works because the scene is always rendered, just hidden via
+      // autoAlpha, same as the fallback site's IncidentLineDraw.
+      const lineArtPath = lineArtPathRef.current;
+      const lineArtLen = lineArtPath?.getTotalLength() ?? 0;
+      if (lineArtPath) {
+        gsap.set(lineArtPath, { strokeDasharray: lineArtLen, strokeDashoffset: lineArtLen });
+      }
+      gsap.set(lineArtLabelRefs.current, { autoAlpha: 0, y: 8 });
+
       // Blue center-split "doors" used only for the lineArt -> projectIntro
       // transition — parked off-stage (each door is half the stage width)
       // until that segment runs.
@@ -95,6 +134,13 @@ export default function Story({ active }: { active: boolean }) {
         { autoAlpha: 0, y: 16 },
       );
 
+      // BestWork's horizontal filmstrip starts on panel 0; dot 0 starts
+      // "active", the rest muted — colors set directly (not via Tailwind
+      // classes) since GSAP animates the actual CSS property, not classes.
+      gsap.set(bestWorkTrackRef.current, { xPercent: 0 });
+      gsap.set(bestWorkDotRefs.current, { backgroundColor: "rgba(255,253,247,0.3)", scale: 1 });
+      gsap.set(bestWorkDotRefs.current[0], { backgroundColor: "#C8FF22", scale: 1.6 });
+
       gsap.set(
         [
           buildLabRefs.current.eyebrow,
@@ -107,10 +153,7 @@ export default function Story({ active }: { active: boolean }) {
       );
 
       gsap.set(contactRefs.current.wordmark, { autoAlpha: 0, scale: 0.85 });
-      gsap.set(
-        [contactRefs.current.tagline, contactRefs.current.cue, contactRefs.current.links],
-        { autoAlpha: 0, y: 12 },
-      );
+      gsap.set([contactRefs.current.cue, contactRefs.current.links], { autoAlpha: 0, y: 12 });
       gsap.set(contactRefs.current.footerBar, { autoAlpha: 0, y: 24 });
       gsap.set(contactRefs.current.signature, { autoAlpha: 0, scale: 0.85 });
 
@@ -164,7 +207,7 @@ export default function Story({ active }: { active: boolean }) {
           const prevEl = sceneRefs.current[prev.id];
           const curEl = sceneRefs.current[s.id];
 
-          if (prev.id === "cover" && s.id === "originBio") {
+          if (prev.id === "cover" && s.id === "origin") {
             // Cover exit (scale down / blur / darken) into a cream
             // paper-gate that closes over the swap and reopens onto
             // Origin — richer than the generic crossfade below, reusing
@@ -210,10 +253,6 @@ export default function Story({ active }: { active: boolean }) {
               .to(doorLeftRef.current, { xPercent: -100, duration: 0.28, ease: "power2.inOut" }, segStart + 0.24)
               .to(doorRightRef.current, { xPercent: 100, duration: 0.28, ease: "power2.inOut" }, segStart + 0.24);
           } else {
-            // Plain crossfade — the shared transition for every other
-            // scene-to-scene handoff, including the split-out Origin beats
-            // and Best Work projects, which used to scrub their own
-            // internal swap/filmstrip and now are just full pages.
             tl.to(prevEl, { autoAlpha: 0, duration: 0.3 }, cursor)
               .set(prevEl, { zIndex: 0 }, cursor + 0.3)
               .set(curEl, { zIndex: 10 }, cursor)
@@ -221,15 +260,95 @@ export default function Story({ active }: { active: boolean }) {
           }
         }
 
+        if (s.id === "origin") {
+          // Origin gets its own 3-beat sequence (bio -> impact -> timeline)
+          // inside its single weight-1.6 window, rather than one static
+          // panel — same crossfade style as the scene-to-scene transitions
+          // above, just nested one level, anchored to this scene's own
+          // `cursor`/`weight` so it stays proportional if SCENE_WEIGHT.origin
+          // ever changes.
+          const originStart = cursor;
+          const bioEl = originBeatRefs.current.bio;
+          const impactEl = originBeatRefs.current.impact;
+          const timelineEl = originBeatRefs.current.timeline;
+
+          const toImpactAt = originStart + weight * 0.56; // ~0.9 into 1.6
+          const toTimelineAt = originStart + weight * 0.94; // ~1.5 into 1.6
+
+          tl.to(bioEl, { autoAlpha: 0, y: -16, duration: 0.25 }, toImpactAt)
+            .set(bioEl, { zIndex: 0 }, toImpactAt + 0.25)
+            .set(impactEl, { zIndex: 10 }, toImpactAt)
+            .fromTo(impactEl, { y: 16 }, { autoAlpha: 1, y: 0, duration: 0.25 }, toImpactAt)
+
+            .to(impactEl, { autoAlpha: 0, y: -16, duration: 0.25 }, toTimelineAt)
+            .set(impactEl, { zIndex: 0 }, toTimelineAt + 0.25)
+            .set(timelineEl, { zIndex: 10 }, toTimelineAt)
+            .fromTo(timelineEl, { y: 16 }, { autoAlpha: 1, y: 0, duration: 0.25 }, toTimelineAt);
+        }
+
+        if (s.id === "lineArt") {
+          // The line draws itself as you scroll through this scene's own
+          // window — confirmed real on-frame (§5) — instead of sitting on
+          // screen fully drawn. Labels stagger in alongside the stroke,
+          // same technique as the fallback site's IncidentLineDraw, just
+          // driven by the master scrub instead of its own ScrollTrigger.
+          const drawStart = cursor + weight * 0.15;
+          const drawDuration = weight * 0.6;
+
+          if (lineArtPathRef.current) {
+            tl.to(
+              lineArtPathRef.current,
+              { strokeDashoffset: 0, duration: drawDuration, ease: "power1.inOut" },
+              drawStart,
+            );
+          }
+          tl.to(
+            lineArtLabelRefs.current,
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.2,
+              stagger: drawDuration / Math.max(lineArtLabelRefs.current.length, 1),
+            },
+            drawStart,
+          );
+        }
+
+        if (s.id === "bestWork") {
+          // Horizontal filmstrip through the case studies, inside
+          // BestWork's own (largest) weight window — equal thirds, each
+          // boundary also registered as a master-timeline label so the
+          // existing `snap: "labelsDirectional"` (built for scene-to-scene
+          // snapping) settles on project boundaries too, for free, with no
+          // second ScrollTrigger.
+          const n = caseStudies.length;
+          const segWeight = weight / n;
+
+          for (let p = 1; p < n; p++) {
+            const boundaryAt = cursor + p * segWeight;
+            const slideDuration = segWeight * 0.4;
+            const slideStart = boundaryAt - slideDuration;
+
+            tl.addLabel(`bestWork-${p}`, boundaryAt);
+            tl.to(
+              bestWorkTrackRef.current,
+              { xPercent: -100 * p, duration: slideDuration, ease: "power2.inOut" },
+              slideStart,
+            )
+              .to(bestWorkDotRefs.current[p - 1], { backgroundColor: "rgba(255,253,247,0.3)", scale: 1, duration: slideDuration }, slideStart)
+              .to(bestWorkDotRefs.current[p], { backgroundColor: "#C8FF22", scale: 1.6, duration: slideDuration }, slideStart);
+          }
+        }
+
         if (s.id === "projectIntro") {
           // Brief title-card entrance, revealed right as the blue doors
           // finish opening onto it.
           const introStart = cursor + weight * 0.05;
-          tl.to(projectIntroRefs.current.eyebrow, { autoAlpha: 1, y: 0, duration: 0.25 }, introStart)
-            .to(projectIntroRefs.current.headline, { autoAlpha: 1, y: 0, duration: 0.38 }, introStart + 0.08)
-            .to(projectIntroRefs.current.tagline, { autoAlpha: 1, y: 0, duration: 0.25 }, introStart + 0.28)
-            .to(projectIntroRefs.current.stack, { autoAlpha: 1, y: 0, duration: 0.25 }, introStart + 0.4)
-            .to(projectIntroRefs.current.cue, { autoAlpha: 1, y: 0, duration: 0.25 }, introStart + 0.52);
+          tl.to(projectIntroRefs.current.eyebrow, { autoAlpha: 1, y: 0, duration: 0.2 }, introStart)
+            .to(projectIntroRefs.current.headline, { autoAlpha: 1, y: 0, duration: 0.3 }, introStart + 0.05)
+            .to(projectIntroRefs.current.tagline, { autoAlpha: 1, y: 0, duration: 0.2 }, introStart + 0.2)
+            .to(projectIntroRefs.current.stack, { autoAlpha: 1, y: 0, duration: 0.2 }, introStart + 0.28)
+            .to(projectIntroRefs.current.cue, { autoAlpha: 1, y: 0, duration: 0.2 }, introStart + 0.36);
         }
 
         if (s.id === "buildLab") {
@@ -238,11 +357,11 @@ export default function Story({ active }: { active: boolean }) {
           // otherwise has no slot for (see HANDOFF.md §4/§6 on this
           // judgment call). Staggers in on entry same as projectIntro.
           const buildStart = cursor + weight * 0.05;
-          tl.to(buildLabRefs.current.eyebrow, { autoAlpha: 1, y: 0, duration: 0.28 }, buildStart)
-            .to(buildLabRefs.current.headline, { autoAlpha: 1, y: 0, duration: 0.4 }, buildStart + 0.08)
-            .to(buildLabRefs.current.featured, { autoAlpha: 1, y: 0, duration: 0.4 }, buildStart + 0.25)
-            .to(buildLabRefs.current.grid, { autoAlpha: 1, y: 0, duration: 0.35 }, buildStart + 0.42)
-            .to(buildLabRefs.current.stack, { autoAlpha: 1, y: 0, duration: 0.35 }, buildStart + 0.56);
+          tl.to(buildLabRefs.current.eyebrow, { autoAlpha: 1, y: 0, duration: 0.2 }, buildStart)
+            .to(buildLabRefs.current.headline, { autoAlpha: 1, y: 0, duration: 0.3 }, buildStart + 0.05)
+            .to(buildLabRefs.current.featured, { autoAlpha: 1, y: 0, duration: 0.3 }, buildStart + 0.18)
+            .to(buildLabRefs.current.grid, { autoAlpha: 1, y: 0, duration: 0.25 }, buildStart + 0.3)
+            .to(buildLabRefs.current.stack, { autoAlpha: 1, y: 0, duration: 0.25 }, buildStart + 0.4);
         }
 
         if (s.id === "contact") {
@@ -254,17 +373,16 @@ export default function Story({ active }: { active: boolean }) {
           const contactStart = cursor + weight * 0.05;
           tl.to(
             contactRefs.current.wordmark,
-            { autoAlpha: 1, scale: 1, duration: 0.5, ease: "back.out(1.6)" },
+            { autoAlpha: 1, scale: 1, duration: 0.4, ease: "back.out(1.6)" },
             contactStart,
           )
-            .to(contactRefs.current.tagline, { autoAlpha: 1, y: 0, duration: 0.3 }, contactStart + 0.4)
-            .to(contactRefs.current.cue, { autoAlpha: 1, y: 0, duration: 0.3 }, contactStart + 0.55)
-            .to(contactRefs.current.links, { autoAlpha: 1, y: 0, duration: 0.3 }, contactStart + 0.68)
-            .to(contactRefs.current.footerBar, { autoAlpha: 1, y: 0, duration: 0.35 }, contactStart + 0.85)
+            .to(contactRefs.current.cue, { autoAlpha: 1, y: 0, duration: 0.25 }, contactStart + 0.3)
+            .to(contactRefs.current.links, { autoAlpha: 1, y: 0, duration: 0.25 }, contactStart + 0.4)
+            .to(contactRefs.current.footerBar, { autoAlpha: 1, y: 0, duration: 0.3 }, contactStart + 0.55)
             .to(
               contactRefs.current.signature,
-              { autoAlpha: 1, scale: 1, duration: 0.4, ease: "back.out(1.8)" },
-              contactStart + 1.05,
+              { autoAlpha: 1, scale: 1, duration: 0.35, ease: "back.out(1.8)" },
+              contactStart + 0.7,
             );
         }
 
@@ -313,6 +431,7 @@ export default function Story({ active }: { active: boolean }) {
         className="relative h-[100dvh] w-full overflow-hidden bg-navy"
       >
         {SCENES.map((s) => {
+          const Comp = SCENE_COMPONENTS[s.id];
           return (
             <div
               key={s.id}
@@ -321,29 +440,32 @@ export default function Story({ active }: { active: boolean }) {
             >
               {s.id === "cover" ? (
                 <CoverScene active={active} />
-              ) : s.id === "originBio" ? (
-                <OriginBioScene />
-              ) : s.id === "originImpact" ? (
-                <OriginImpactScene />
-              ) : s.id === "originTimeline" ? (
-                <OriginTimelineScene />
+              ) : s.id === "origin" ? (
+                <OriginScene
+                  registerBeat={(id, el) => (originBeatRefs.current[id] = el)}
+                />
               ) : s.id === "lineArt" ? (
-                <LineArtScene />
+                <LineArtScene
+                  registerPath={(el) => (lineArtPathRef.current = el)}
+                  registerLabel={(i, el) => (lineArtLabelRefs.current[i] = el)}
+                />
               ) : s.id === "projectIntro" ? (
                 <ProjectIntroScene
                   registerRef={(id, el) => (projectIntroRefs.current[id] = el)}
                 />
-              ) : s.id === "bestWork0" ? (
-                <BestWorkScene index={0} />
-              ) : s.id === "bestWork1" ? (
-                <BestWorkScene index={1} />
-              ) : s.id === "bestWork2" ? (
-                <BestWorkScene index={2} />
+              ) : s.id === "bestWork" ? (
+                <BestWorkScene
+                  registerTrack={(el) => (bestWorkTrackRef.current = el)}
+                  registerPanel={(i, el) => (bestWorkPanelRefs.current[i] = el)}
+                  registerDot={(i, el) => (bestWorkDotRefs.current[i] = el)}
+                />
               ) : s.id === "buildLab" ? (
                 <BuildLabScene registerRef={(id, el) => (buildLabRefs.current[id] = el)} />
               ) : s.id === "contact" ? (
                 <ContactScene registerRef={(id, el) => (contactRefs.current[id] = el)} />
-              ) : null}
+              ) : (
+                <Comp />
+              )}
             </div>
           );
         })}
