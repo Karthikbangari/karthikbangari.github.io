@@ -253,10 +253,31 @@ export default function Story({ active }: { active: boolean }) {
               .to(doorLeftRef.current, { xPercent: -100, duration: 0.28, ease: "power2.inOut" }, segStart + 0.24)
               .to(doorRightRef.current, { xPercent: 100, duration: 0.28, ease: "power2.inOut" }, segStart + 0.24);
           } else {
-            tl.to(prevEl, { autoAlpha: 0, duration: 0.3 }, cursor)
-              .set(prevEl, { zIndex: 0 }, cursor + 0.3)
-              .set(curEl, { zIndex: 10 }, cursor)
-              .to(curEl, { autoAlpha: 1, duration: 0.3 }, cursor);
+            // Generic scene-to-scene handoff — a scale/slide/blur crossfade
+            // instead of a flat opacity dissolve, so every cut (not just the
+            // two bespoke gate/door ones) reads as a deliberate move rather
+            // than a fade. Outgoing scene eases away and up while blurring
+            // out; incoming scene arrives from slightly below/larger and
+            // sharpens into place, same blur-as-motion language as the
+            // cover -> origin gate transition above. Anchored at `cursor`
+            // exactly (no lead-in) — Origin's internal beat crossfade runs
+            // right up to this same boundary, and starting any earlier
+            // visibly collides the blur with that still-finishing swap.
+            const segStart = cursor;
+            tl.set(curEl, { zIndex: 10 }, segStart)
+              .fromTo(
+                prevEl,
+                { scale: 1, y: 0, filter: "blur(0px)" },
+                { scale: 0.96, y: -28, filter: "blur(6px)", autoAlpha: 0, duration: 0.35, ease: "power2.in" },
+                segStart,
+              )
+              .set(prevEl, { zIndex: 0, scale: 1, y: 0, filter: "blur(0px)" }, segStart + 0.35)
+              .fromTo(
+                curEl,
+                { scale: 1.05, y: 28, filter: "blur(6px)", autoAlpha: 0 },
+                { scale: 1, y: 0, filter: "blur(0px)", autoAlpha: 1, duration: 0.4, ease: "power2.out" },
+                segStart + 0.15,
+              );
           }
         }
 
@@ -273,7 +294,11 @@ export default function Story({ active }: { active: boolean }) {
           const timelineEl = originBeatRefs.current.timeline;
 
           const toImpactAt = originStart + weight * 0.56; // ~0.9 into 1.6
-          const toTimelineAt = originStart + weight * 0.94; // ~1.5 into 1.6
+          // ~1.36 into 1.6 — finishes (+0.25 duration) with margin before
+          // this scene's own end, so the scene-level exit transition's
+          // container-wide blur doesn't start compositing on top of this
+          // beat swap while it's still mid-flight.
+          const toTimelineAt = originStart + weight * 0.85;
 
           tl.to(bioEl, { autoAlpha: 0, y: -16, duration: 0.25 }, toImpactAt)
             .set(bioEl, { zIndex: 0 }, toImpactAt + 0.25)
