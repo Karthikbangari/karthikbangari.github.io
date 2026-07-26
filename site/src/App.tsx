@@ -17,14 +17,12 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import StructuredData from "./components/StructuredData";
 import ChapterProgress from "./components/ChapterProgress";
+import Story from "./story/Story";
+import { useDesktopStoryMode } from "./lib/useDesktopStoryMode";
 
-export default function App() {
-  const [introDone, setIntroDone] = useState(false);
-
+function FallbackSite({ introDone }: { introDone: boolean }) {
   return (
     <>
-      <StructuredData />
-      {!introDone && <Preloader onDone={() => setIntroDone(true)} />}
       <Header />
       <main id="main">
         <Hero active={introDone} />
@@ -47,6 +45,19 @@ export default function App() {
       </main>
       <Footer />
       <ChapterProgress />
+    </>
+  );
+}
+
+export default function App() {
+  const [introDone, setIntroDone] = useState(false);
+  const storyMode = useDesktopStoryMode();
+
+  return (
+    <>
+      <StructuredData />
+      {!introDone && <Preloader onDone={() => setIntroDone(true)} />}
+      {storyMode ? <Story active={introDone} /> : <FallbackSite introDone={introDone} />}
     </>
   );
 }
