@@ -3,19 +3,6 @@ import { gsap, ensureGsapRegistered, prefersReducedMotion } from "../lib/motion"
 
 const SESSION_KEY = "preloader-seen";
 
-// Cycling phrase pairs — the reference footage shows several scattered
-// word-pairs converging in sequence as the percentage climbs, not one
-// static hold. Copy is our own (the reference is someone else's demo reel,
-// not content to reproduce), phrased to match language already used
-// elsewhere on the site (see ChapterInterstitial's "AUTOMATE THE
-// REPEATABLE. OBSERVE THE IMPORTANT.").
-const PHRASES = [
-  { left: "I build", right: "reliable systems" },
-  { left: "I automate", right: "the repeatable" },
-  { left: "I observe", right: "what matters" },
-];
-const PHRASE_DURATION = 0.9;
-
 // Decided once, from a lazy initializer — reading sessionStorage here (not
 // writing) keeps this safe under React StrictMode's dev-only double-invoke,
 // which would otherwise make the second pass see the first pass's write and
@@ -50,8 +37,6 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
     ensureGsapRegistered();
 
     const counter = { value: 0 };
-    const counterDuration = PHRASE_DURATION * PHRASES.length;
-
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         defaults: { ease: "power2.out" },
@@ -64,11 +49,14 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
         },
       });
 
+      gsap.set(wordLeftRef.current, { x: -60, y: -14, rotate: -7, filter: "blur(6px)" });
+      gsap.set(wordRightRef.current, { x: 70, y: 16, rotate: 5, filter: "blur(6px)" });
+
       tl.to(
         counter,
         {
           value: 100,
-          duration: counterDuration,
+          duration: 2,
           ease: "power1.inOut",
           onUpdate: () => {
             if (percentRef.current) {
@@ -80,48 +68,10 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
           },
         },
         0,
-      );
-
-      PHRASES.forEach((phrase, i) => {
-        const t = i * PHRASE_DURATION;
-
-        tl.call(
-          () => {
-            if (wordLeftRef.current) wordLeftRef.current.textContent = phrase.left;
-            if (wordRightRef.current) wordRightRef.current.textContent = phrase.right;
-          },
-          undefined,
-          t,
-        )
-          .fromTo(
-            wordLeftRef.current,
-            { x: -60, y: -14, rotate: -7, filter: "blur(6px)", autoAlpha: 0 },
-            { x: 0, y: 0, rotate: 0, filter: "blur(0px)", autoAlpha: 1, duration: PHRASE_DURATION * 0.45 },
-            t,
-          )
-          .fromTo(
-            wordRightRef.current,
-            { x: 70, y: 16, rotate: 5, filter: "blur(6px)", autoAlpha: 0 },
-            { x: 0, y: 0, rotate: 0, filter: "blur(0px)", autoAlpha: 1, duration: PHRASE_DURATION * 0.45 },
-            t,
-          );
-
-        const isLast = i === PHRASES.length - 1;
-        if (!isLast) {
-          const outStart = t + PHRASE_DURATION * 0.7;
-          tl.to(
-            wordLeftRef.current,
-            { x: 40, autoAlpha: 0, filter: "blur(6px)", duration: PHRASE_DURATION * 0.25 },
-            outStart,
-          ).to(
-            wordRightRef.current,
-            { x: -40, autoAlpha: 0, filter: "blur(6px)", duration: PHRASE_DURATION * 0.25 },
-            outStart,
-          );
-        }
-      });
-
-      tl.to({}, { duration: 0.3 }); // brief hold at 100%
+      )
+        .to(wordLeftRef.current, { x: 0, y: 0, rotate: 0, filter: "blur(0px)", duration: 1.6 }, 0.1)
+        .to(wordRightRef.current, { x: 0, y: 0, rotate: 0, filter: "blur(0px)", duration: 1.6 }, 0.1)
+        .to({}, { duration: 0.3 }); // brief hold at 100%
     }, rootRef);
 
     return () => ctx.revert();
@@ -142,13 +92,17 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
           ref={wordLeftRef}
           className="font-display text-4xl font-bold leading-tight sm:text-6xl"
         >
-          {PHRASES[0].left}
+          I build
+          <br />
+          reliable systems
         </span>
         <span
           ref={wordRightRef}
           className="font-hand text-4xl text-signal sm:text-6xl"
         >
-          {PHRASES[0].right}
+          Automation
+          <br />
+          by intention
         </span>
       </div>
 
