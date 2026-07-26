@@ -10,7 +10,7 @@ export default function StoryNav({
 }) {
   return (
     <>
-      <div className="fixed inset-x-0 top-0 z-40 flex items-center justify-between bg-cream px-6 py-3 text-navy">
+      <div className="absolute inset-x-0 top-0 z-40 flex items-center justify-between bg-cream px-6 py-3 text-navy">
         <span className="font-mono text-sm font-semibold tracking-wide">
           Karthik Bangari
         </span>
@@ -24,7 +24,7 @@ export default function StoryNav({
 
       <nav
         aria-label="Story chapters"
-        className="fixed inset-x-0 bottom-0 z-40 flex justify-center gap-1 border-t-2 border-navy bg-cream px-4 py-3 sm:gap-4"
+        className="absolute inset-x-0 bottom-0 z-40 flex justify-center gap-1 border-t-2 border-navy bg-cream px-4 py-3 sm:gap-4"
       >
         {SCENES.map((s) => (
           <button
