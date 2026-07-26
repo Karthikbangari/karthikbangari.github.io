@@ -37,16 +37,4 @@ export const experienceStages: ExperienceStage[] = [
       "Reduced cloud spend by 25%",
     ],
   },
-  {
-    year: "2026",
-    title: "Platform / SRE direction",
-    highlights: [
-      "Platform Engineering",
-      "Site Reliability Engineering",
-      "Secure self-service infrastructure",
-      "Developer experience",
-      "Scalable cloud platforms",
-      "Automation and operational excellence",
-    ],
-  },
 ];

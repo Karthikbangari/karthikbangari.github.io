@@ -74,7 +74,7 @@ function TimelineBeat() {
         From junior engineer to platform direction.
       </h2>
 
-      <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
+      <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
         {experienceStages.map((stage) => (
           <div key={stage.year} className="border-l-2 border-blue/30 pl-4">
             <p className="font-mono text-xs text-blue">{stage.year}</p>

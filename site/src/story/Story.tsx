@@ -293,21 +293,23 @@ export default function Story({ active }: { active: boolean }) {
           const timelineEl = originBeatRefs.current.timeline;
 
           const toImpactAt = originStart + weight * 0.56; // ~0.9 into 1.6
-          // ~1.36 into 1.6 — finishes (+0.25 duration) with margin before
+          // ~1.25 into 1.6 — finishes (+0.3 duration) with margin before
           // this scene's own end, so the scene-level exit transition's
           // container-wide blur doesn't start compositing on top of this
-          // beat swap while it's still mid-flight.
-          const toTimelineAt = originStart + weight * 0.85;
+          // beat swap while it's still mid-flight. Kept a touch earlier
+          // than before (was 0.85) since the beat's own fade got slower.
+          const toTimelineAt = originStart + weight * 0.78;
+          const beatFadeDuration = 0.3; // was 0.25 — a little slower/calmer
 
-          tl.to(bioEl, { autoAlpha: 0, y: -16, duration: 0.25 }, toImpactAt)
-            .set(bioEl, { zIndex: 0 }, toImpactAt + 0.25)
+          tl.to(bioEl, { autoAlpha: 0, y: -16, duration: beatFadeDuration }, toImpactAt)
+            .set(bioEl, { zIndex: 0 }, toImpactAt + beatFadeDuration)
             .set(impactEl, { zIndex: 10 }, toImpactAt)
-            .fromTo(impactEl, { y: 16 }, { autoAlpha: 1, y: 0, duration: 0.25 }, toImpactAt)
+            .fromTo(impactEl, { y: 16 }, { autoAlpha: 1, y: 0, duration: beatFadeDuration }, toImpactAt)
 
-            .to(impactEl, { autoAlpha: 0, y: -16, duration: 0.25 }, toTimelineAt)
-            .set(impactEl, { zIndex: 0 }, toTimelineAt + 0.25)
+            .to(impactEl, { autoAlpha: 0, y: -16, duration: beatFadeDuration }, toTimelineAt)
+            .set(impactEl, { zIndex: 0 }, toTimelineAt + beatFadeDuration)
             .set(timelineEl, { zIndex: 10 }, toTimelineAt)
-            .fromTo(timelineEl, { y: 16 }, { autoAlpha: 1, y: 0, duration: 0.25 }, toTimelineAt);
+            .fromTo(timelineEl, { y: 16 }, { autoAlpha: 1, y: 0, duration: beatFadeDuration }, toTimelineAt);
         }
 
         if (s.id === "lineArt") {
