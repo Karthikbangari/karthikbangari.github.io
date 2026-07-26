@@ -21,10 +21,7 @@ export default function BuildLabScene({
           After Hours: Build Lab
         </h2>
 
-        <div
-          ref={(el) => registerRef("featured", el)}
-          className="mt-6 rounded-lg border-l-4 border-signal bg-paper p-6 text-navy shadow-[0_16px_40px_rgba(0,0,0,0.25)]"
-        >
+        <div ref={(el) => registerRef("featured", el)} className="mt-6 rounded-sm bg-paper p-6 text-navy">
           <span className="rounded-full bg-navy px-3 py-1 font-mono text-xs text-signal">
             {featuredBuild.tagline}
           </span>
@@ -32,52 +29,27 @@ export default function BuildLabScene({
           <p className="mt-2 max-w-xl text-sm text-muted-ink">{featuredBuild.description}</p>
         </div>
 
-        <div ref={(el) => registerRef("grid", el)} className="mt-8">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/50">
-            Also building
-          </p>
-          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {labProjects.slice(0, 6).map((p) => {
-              const isShipped = p.status === "Personal project";
-              return (
-                <div
-                  key={p.name}
-                  className="rounded-lg border border-paper/15 bg-paper/[0.06] p-3.5"
-                >
-                  <p className="font-display text-sm font-semibold text-paper">{p.name}</p>
-                  <p
-                    className={`mt-1.5 flex items-center gap-1.5 font-mono text-[11px] ${
-                      isShipped ? "text-signal" : "text-paper/45"
-                    }`}
-                  >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${isShipped ? "bg-signal" : "border border-paper/45"}`}
-                    />
-                    {p.status}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+        <div ref={(el) => registerRef("grid", el)} className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {labProjects.slice(0, 6).map((p) => (
+            <div key={p.name} className="rounded-sm bg-navy/50 p-3">
+              <p className="font-display text-sm font-semibold text-paper">{p.name}</p>
+              <p className="mt-1 font-mono text-[11px] text-signal">{p.status}</p>
+            </div>
+          ))}
         </div>
 
-        <div ref={(el) => registerRef("stack", el)} className="mt-8">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-paper/50">
-            Tech stack
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {skillGroups
-              .flatMap((g) => g.skills)
-              .slice(0, 14)
-              .map((s) => (
-                <span
-                  key={s.name}
-                  className="rounded-full border border-paper/30 px-3 py-1 font-mono text-xs text-paper/80"
-                >
-                  {s.name}
-                </span>
-              ))}
-          </div>
+        <div ref={(el) => registerRef("stack", el)} className="mt-6 flex flex-wrap gap-2">
+          {skillGroups
+            .flatMap((g) => g.skills)
+            .slice(0, 14)
+            .map((s) => (
+              <span
+                key={s.name}
+                className="rounded-full border border-paper/30 px-3 py-1 font-mono text-xs text-paper/80"
+              >
+                {s.name}
+              </span>
+            ))}
         </div>
       </div>
     </div>
